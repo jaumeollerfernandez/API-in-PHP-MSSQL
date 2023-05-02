@@ -15,7 +15,7 @@ INSERT INTO employees (name, department, salary) VALUES
 ('Sarah Lee', 'Sales', 80000.00),
 ('Mike Brown', 'Engineering', 90000.00);
 
-SELECT * FROM employees;
+
 
 CREATE OR ALTER PROCEDURE insert_employee @employee_name VARCHAR(50), @employee_salary VARCHAR(50), @employee_department VARCHAR(50)
 AS

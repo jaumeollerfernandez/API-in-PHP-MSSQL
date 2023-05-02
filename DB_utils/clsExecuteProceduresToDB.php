@@ -6,8 +6,8 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     private PDO $DBconnection;
     private string $ProcedureName;
-    private PDOStatement $PreparedProcedure;
-    private Array $_ProcedureQueue;
+    private $PreparedProcedure;
+    private Array $_ProcedureQueue = [];
     private Array $result;
     private int $_id = 1;
 
@@ -21,15 +21,25 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         switch($TypeOfParam){
             case 'multiple':
                 for($i = 0; $i < count($Params); $i++){
-                    print_r($Params[$i]);
-                    print_r(count($Params));
                     $this->prepareProcedure($NameProcedure, $Params[$i], count($Params[0]));
+                    array_push($this->_ProcedureQueue, $this->PreparedProcedure);
                 }
-                array_push($this->_ProcedureQueue, $this->PreparedProcedure);
+                print_r($this->_ProcedureQueue);
+                
+                foreach($this->_ProcedureQueue as $Procedure){
+                    var_dump($Procedure);
+                    // $this->executeProcedure($Procedure);
+                }
                 break;
             case 'single':
+                $this->prepareProcedure($NameProcedure, $Params, 0);
+                $this->executeProcedure($this->PreparedProcedure);
                 break;
             case 'none':
+                $this->prepareProcedure($NameProcedure, [], 0);
+                $this->executeProcedure($this->PreparedProcedure);
+                $this->fetchExecutionProcedure();
+                $this->RenderXML();
                 break;
             default:
                 echo('Error in your Procedure Call');
@@ -40,6 +50,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     
     function prepareProcedure(string $name_procedure, array $params = [], int $NumberOfFields): void
     {
+        $this->PreparedProcedure = null;
         $this->ProcedureName = $name_procedure;
         $this->PreparedProcedure = $this->DBconnection->prepare($this->ProcedureName);
         if(count($params) > 0){
@@ -54,9 +65,9 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         }
     }   
     
-    function executeProcedure(): void
+    function executeProcedure($Procedure): void
     {
-        $this->PreparedProcedure->execute();
+        $Procedure->execute();
     }
     
     function fetchExecutionProcedure(): void
@@ -65,7 +76,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     }
     
     function RenderXML():void{
-        // $this->_SetXMLheader();
+        $this->_SetXMLheader();
         foreach($this->result[0] as $xml){
             $obj_xml = simplexml_load_string($xml);
         }
