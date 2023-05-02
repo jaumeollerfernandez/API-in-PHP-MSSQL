@@ -9,5 +9,6 @@ $b = new clsExecuteProceduresToDB($a->getPDODB());
 $b->prepareProcedure("get_products");
 $b->executeProcedure();
 $b->fetchExecutionProcedure();
+$b->RenderXML();
 
 ?>

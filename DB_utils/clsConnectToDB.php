@@ -12,7 +12,7 @@ class clsConnectToDB implements ConnectionDbInterface{
     private string $_Password = '';
     private ?PDO $Connection = null;
 
-
+    // PDO::FETCH_OBJ
     function __construct($SQLserver, $Port, $DBname, $User, $Password)
     {
         $this->_sqlServer = $SQLserver;
@@ -42,6 +42,7 @@ class clsConnectToDB implements ConnectionDbInterface{
 
     function _setAttributesToDB(){
         $this->Connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->Connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_OBJ);
 
     }
 

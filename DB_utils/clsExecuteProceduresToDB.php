@@ -7,6 +7,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     private PDO $DBconnection;
     private string $ProcedureName;
     private PDOStatement $PreparedProcedure;
+    private Array $result;
 
     function __construct(PDO $PDOconnection)
     {
@@ -19,18 +20,11 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->PreparedProcedure = $this->DBconnection->prepare($this->ProcedureName);
     }
 
-    function BindParamToProcedure($ParamName, $ParamVariable, $ParamType){
-        $this->PreparedProcedure->bindParam($ParamName, $ParamVariable, $ParamType);
+    function BindParamToProcedure($MatrixOfParams){
+        for($i = 0; $i < count($MatrixOfParams); $i++){
+            $this->PreparedProcedure->bindParam($MatrixOfParams[0], $MatrixOfParams[1]);
+        }
     }    
-        // Ejemplo de porqué es así
-        // $calorías = 150;
-        // $color = 'red';
-        // $gsent = $gbd->prepare('SELECT name, colour, calories
-        // FROM fruit
-        // WHERE calories < :calories AND colour = :colour');
-        // $gsent->bindParam(':calories', $calorías, PDO::PARAM_INT);
-        // $gsent->bindParam(':colour', $color, PDO::PARAM_STR, 12);
-        // $gsent->execute();
 
     function executeProcedure(): void
     {
@@ -39,15 +33,15 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     function fetchExecutionProcedure(): void
     {   
-        $result = $this->PreparedProcedure->fetchAll(PDO::FETCH_ASSOC);
+        // $this->result = $this->PreparedProcedure->fetchAll(PDO::FETCH_ASSOC);
+        $this->result = $this->PreparedProcedure->fetchAll(PDO::FETCH_OBJ);
     }
 
-    function RenderXML(Array $Data):void{
-        header("Content-type: text/xml");
-        foreach($Data[0] as $xml){
+    function RenderXML():void{
+        $this->_SetXMLheader();
+        foreach($this->result[0] as $xml){
             $obj_xml = simplexml_load_string($xml);
         }
-
         echo $obj_xml->asXML();
     }
 
