@@ -15,12 +15,13 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     function prepareProcedure(string $name_procedure, array $params = []): void
     {
-        
+        $this->ProcedureName = $name_procedure;
+        $this->PreparedProcedure = $this->DBconnection->prepare($this->ProcedureName);
     }
 
     function BindParamToProcedure($ParamName, $ParamVariable, $ParamType){
-       $this->PreparedProcedure->bindParam($ParamType, $ParamVariable); 
-    
+        $this->PreparedProcedure->bindParam($ParamName, $ParamVariable, $ParamType);
+    }    
         // Ejemplo de porqué es así
         // $calorías = 150;
         // $color = 'red';
@@ -30,24 +31,28 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         // $gsent->bindParam(':calories', $calorías, PDO::PARAM_INT);
         // $gsent->bindParam(':colour', $color, PDO::PARAM_STR, 12);
         // $gsent->execute();
-    
-    }
 
     function executeProcedure(): void
     {
-        
+        $this->PreparedProcedure->execute();
     }
 
     function fetchExecutionProcedure(): void
-    {
-        
+    {   
+        $result = $this->PreparedProcedure->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function RenderXML($Data){
-        
+    function RenderXML(Array $Data):void{
+        header("Content-type: text/xml");
+        foreach($Data[0] as $xml){
+            $obj_xml = simplexml_load_string($xml);
+        }
+
+        echo $obj_xml->asXML();
+    }
+
+    function _SetXMLheader(){
+        header('Content-type: text/xml');
     }
 
 }
-
-
-?>

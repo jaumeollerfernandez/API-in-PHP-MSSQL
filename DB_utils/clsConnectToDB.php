@@ -29,11 +29,10 @@ class clsConnectToDB implements ConnectionDbInterface{
     function initConnection(): void
     {
         try{
-
             $ConfigVariables = "sqlsrv:Server=" . $this->_sqlServer . "," . $this->_port . ";Database=" . $this->_DBname;
             $this->Connection = new PDO($ConfigVariables,$this->_Username, $this->_Password);
             $this->_setAttributesToDB();
-            echo('Connection Established');
+            // echo('Connection Established');
 
         } catch(Exception $error) {
             print_r($error);
@@ -46,13 +45,6 @@ class clsConnectToDB implements ConnectionDbInterface{
 
     }
 
-    function EchoThings($thing){
-        print_r($thing);
-    }
-
 }
-
-// $a = new clsConnectToDB("172.17.0.1","14333","gisdb","SA","@Asix13021997");
-// $a->initConnection();
 
 ?>
