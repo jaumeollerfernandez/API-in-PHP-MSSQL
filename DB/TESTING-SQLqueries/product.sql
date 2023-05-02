@@ -1,5 +1,7 @@
-DROP TABLE productos
-Drop procedure get_products
+CREATE DATABASE shop;
+USE shop;
+-- DROP TABLE productos
+-- Drop procedure get_products
 CREATE TABLE productos (
   nombre VARCHAR(50) NOT NULL,
   precio DECIMAL(10, 2) NOT NULL,
