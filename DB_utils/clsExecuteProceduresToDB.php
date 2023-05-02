@@ -24,16 +24,27 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     $this->prepareProcedure($NameProcedure, $Params[$i], count($Params[0]));
                     array_push($this->_ProcedureQueue, $this->PreparedProcedure);
                 }
-                print_r($this->_ProcedureQueue);
-                
-                foreach($this->_ProcedureQueue as $Procedure){
-                    var_dump($Procedure);
-                    // $this->executeProcedure($Procedure);
+                var_dump($this->_ProcedureQueue);
+                try{
+                    print_r(count($this->_ProcedureQueue));
+                    for($j = 0; $j < count($this->_ProcedureQueue); $j++){
+                        print_r($Params[$j]);
+                        $this->BindParamToProcedure($Params[$j]);
+                        // $this->executeProcedure($this->_ProcedureQueue[$j]);
+                    }
+                }catch(PDOException $error){
+                    echo($error);
                 }
+
                 break;
             case 'single':
                 $this->prepareProcedure($NameProcedure, $Params, 0);
-                $this->executeProcedure($this->PreparedProcedure);
+                var_dump($Params);
+                var_dump($this->PreparedProcedure);
+                $this->BindParamToProcedure($Params);
+                // $this->executeProcedure($this->PreparedProcedure);
+                // $this->fetchExecutionProcedure();
+                // $this->RenderXML();
                 break;
             case 'none':
                 $this->prepareProcedure($NameProcedure, [], 0);
@@ -50,19 +61,17 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     
     function prepareProcedure(string $name_procedure, array $params = [], int $NumberOfFields): void
     {
-        $this->PreparedProcedure = null;
         $this->ProcedureName = $name_procedure;
         $this->PreparedProcedure = $this->DBconnection->prepare($this->ProcedureName);
-        if(count($params) > 0){
-            $this->BindParamToProcedure($params, $NumberOfFields);
-        }
     }
 
     function BindParamToProcedure($ArrayOfParams){
+        $this->_id = 1;
         for($j = 1; $j <= count($ArrayOfParams); $j++){
             $this->PreparedProcedure->bindParam($this->_id,$ArrayOfParams[$j-1]);
             $this->_id++;
         }
+        $this->executeProcedure($this->PreparedProcedure);
     }   
     
     function executeProcedure($Procedure): void

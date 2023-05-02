@@ -16,15 +16,15 @@ INSERT INTO employees (name, department, salary) VALUES
 ('Mike Brown', 'Engineering', 90000.00);
 
 
-
 CREATE OR ALTER PROCEDURE insert_employee @employee_name VARCHAR(50), @employee_salary VARCHAR(50), @employee_department VARCHAR(50)
 AS
 BEGIN
+
   SET NOCOUNT ON;
   INSERT INTO employees(name, salary, department)
   VALUES(@employee_name, @employee_salary, @employee_department);
   
-  IF @@ROWCOUNT > 0
+  -- IF @@ROWCOUNT > 0
     -- SET @error = 1;
 
   SELECT 'insert Success' AS message FOR XML RAW, ROOT('Response');
