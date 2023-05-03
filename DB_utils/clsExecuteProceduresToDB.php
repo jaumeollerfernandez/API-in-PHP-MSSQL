@@ -16,12 +16,13 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->DBconnection = $PDOconnection;
     }
 
-    function CallProcedure(string $NameProcedure, Array $Params = [], string $TypeOfParam){
+    function CallProcedure(string $NameProcedure, Array $Params = [], string $TypeOfParam = 'single'){
 
         switch($TypeOfParam){
             case 'multiple':
                 for($i = 0; $i < count($Params); $i++){
-                    $this->prepareProcedure($NameProcedure, $Params[$i], count($Params[0]));
+                    $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
+                    $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
                     array_push($this->_ProcedureQueue, $this->PreparedProcedure);
                 }
                 var_dump($this->_ProcedureQueue);
@@ -38,11 +39,9 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
                 break;
             case 'single':
-                $this->prepareProcedure($NameProcedure, $Params, 0);
-                var_dump($Params);
-                var_dump($this->PreparedProcedure);
+                $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
+                $this->prepareProcedure($ConcatenatedString, $Params, 0);
                 $this->BindParamToProcedure($Params);
-                // $this->executeProcedure($this->PreparedProcedure);
                 // $this->fetchExecutionProcedure();
                 // $this->RenderXML();
                 break;
@@ -57,6 +56,26 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         }
             
 
+    }
+
+    function _PrepareStringToPrepareProcedure(string $name_procedure, $ArrayOfParams){
+        $EXEC = "EXEC ";
+        $Interrogation = $this->_ObtainNumberOfInterrogations($ArrayOfParams);
+        $ConcatenatedString = $EXEC . $name_procedure . " ". $Interrogation;
+        return $ConcatenatedString;
+    }
+
+    function _ObtainNumberOfInterrogations(Array $Array){
+        $result = [];
+        if(count($Array) > 0){
+            for($i = 1; $i <= count($Array); $i++){
+                array_push($result, "?");
+                if($i != count($Array)){
+                    array_push($result, ",");
+                }
+            }
+        }
+        return implode("",$result);
     }
     
     function prepareProcedure(string $name_procedure, array $params = [], int $NumberOfFields): void

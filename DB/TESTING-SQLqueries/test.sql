@@ -1,5 +1,6 @@
+USE test;
 DROP TABLE employees
-USE shop;
+USE test;
 CREATE TABLE employees (
   name VARCHAR(50) NOT NULL,
   department VARCHAR(50) NOT NULL,
@@ -31,7 +32,7 @@ BEGIN
   return 0;
 END
 
-EXEC insert_employee 'Jhon', 1324.21, 'depa'
+EXEC insert_employee 'Jhon', 1324.21, 'depa';
 
-USE shop;
-SELECT * FROM employees
+USE test;
+SELECT * FROM employees;
