@@ -18,6 +18,8 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     function CallProcedure(string $NameProcedure, Array $Params = [], string $TypeOfParam = 'single'){
 
+        var_dump(is_array($Params));
+
         switch($TypeOfParam){
             case 'multiple':
                 for($i = 0; $i < count($Params); $i++){
@@ -25,13 +27,11 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
                     array_push($this->_ProcedureQueue, $this->PreparedProcedure);
                 }
-                var_dump($this->_ProcedureQueue);
                 try{
                     print_r(count($this->_ProcedureQueue));
                     for($j = 0; $j < count($this->_ProcedureQueue); $j++){
                         print_r($Params[$j]);
                         $this->BindParamToProcedure($Params[$j]);
-                        // $this->executeProcedure($this->_ProcedureQueue[$j]);
                     }
                 }catch(PDOException $error){
                     echo($error);
@@ -90,7 +90,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
             $this->PreparedProcedure->bindParam($this->_id,$ArrayOfParams[$j-1]);
             $this->_id++;
         }
-        $this->executeProcedure($this->PreparedProcedure);
+        // $this->executeProcedure($this->PreparedProcedure);
     }   
     
     function executeProcedure($Procedure): void
