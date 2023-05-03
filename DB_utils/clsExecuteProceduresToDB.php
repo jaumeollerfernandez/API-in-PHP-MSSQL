@@ -18,10 +18,10 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     function CallProcedure(string $NameProcedure, Array $Params = [], string $TypeOfParam = 'single'){
 
-        var_dump(is_array($Params));
+        $CheckIfItsMatrix = $this->_CheckIfItsMatrix($Params);
 
-        switch($TypeOfParam){
-            case 'multiple':
+        switch($CheckIfItsMatrix){
+            case true:
                 for($i = 0; $i < count($Params); $i++){
                     $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
                     $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
@@ -32,24 +32,29 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     for($j = 0; $j < count($this->_ProcedureQueue); $j++){
                         print_r($Params[$j]);
                         $this->BindParamToProcedure($Params[$j]);
+                        var_dump($this->PreparedProcedure);
+                        echo('<br>');
+                        echo('<br>');
+                        echo('<br>');
+                        echo('<br>');
+                        $this->executeProcedure($this->PreparedProcedure);
                     }
                 }catch(PDOException $error){
+                    echo('<br>');
                     echo($error);
                 }
-
                 break;
-            case 'single':
-                $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
-                $this->prepareProcedure($ConcatenatedString, $Params, 0);
-                $this->BindParamToProcedure($Params);
-                // $this->fetchExecutionProcedure();
-                // $this->RenderXML();
-                break;
-            case 'none':
-                $this->prepareProcedure($NameProcedure, [], 0);
-                $this->executeProcedure($this->PreparedProcedure);
-                $this->fetchExecutionProcedure();
-                $this->RenderXML();
+            case false:
+                if (count($Params) > 0){
+                    $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
+                    $this->prepareProcedure($ConcatenatedString, $Params, 0);
+                    $this->BindParamToProcedure($Params);
+                }else{
+                    $this->prepareProcedure($NameProcedure, [], 0);
+                    $this->executeProcedure($this->PreparedProcedure);
+                    $this->fetchExecutionProcedure();
+                    $this->RenderXML();
+                }
                 break;
             default:
                 echo('Error in your Procedure Call');
@@ -58,7 +63,13 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     }
 
+    function _CheckIfItsMatrix($Matrix){
+        $result = is_array($Matrix[0]);
+        return $result;
+    }
+
     function _PrepareStringToPrepareProcedure(string $name_procedure, $ArrayOfParams){
+
         $EXEC = "EXEC ";
         $Interrogation = $this->_ObtainNumberOfInterrogations($ArrayOfParams);
         $ConcatenatedString = $EXEC . $name_procedure . " ". $Interrogation;
@@ -67,18 +78,32 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     function _ObtainNumberOfInterrogations(Array $Array){
         $result = [];
-        if(count($Array) > 0){
-            for($i = 1; $i <= count($Array); $i++){
-                array_push($result, "?");
-                if($i != count($Array)){
-                    array_push($result, ",");
+        $CheckIfItsMatrix = $this->_CheckIfItsMatrix($Array);
+        
+        if($CheckIfItsMatrix == true){
+            if(count($Array[0]) > 0){
+                for($i = 1; $i <= count($Array[0]); $i++){
+                    array_push($result, "?");
+                    if($i != count($Array[0])){
+                        array_push($result, ",");
+                    }
                 }
             }
+        }else{
+            if(count($Array) > 0){
+                for($i = 1; $i <= count($Array); $i++){
+                    array_push($result, "?");
+                    if($i != count($Array)){
+                        array_push($result, ",");
+                    }
+                }
+            }
+
         }
         return implode("",$result);
     }
     
-    function prepareProcedure(string $name_procedure, array $params = [], int $NumberOfFields): void
+    function prepareProcedure(string $name_procedure, array $params = []): void
     {
         $this->ProcedureName = $name_procedure;
         $this->PreparedProcedure = $this->DBconnection->prepare($this->ProcedureName);
@@ -90,7 +115,6 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
             $this->PreparedProcedure->bindParam($this->_id,$ArrayOfParams[$j-1]);
             $this->_id++;
         }
-        // $this->executeProcedure($this->PreparedProcedure);
     }   
     
     function executeProcedure($Procedure): void

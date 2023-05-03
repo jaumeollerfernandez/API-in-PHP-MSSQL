@@ -15,9 +15,9 @@
 
 interface ControllerDataBaseInterface {
 
-    public function prepareProcedure(string $name_procedure, array $params=[], int $NumberOfFields): void;
+    public function prepareProcedure(string $name_procedure, array $params=[]): void;
 
-    public function executeProcedure(PDOStatement $Procedure): void;
+    public function executeProcedure(PDOstatement $Procedure): void;
 
     public function fetchExecutionProcedure(): void;
 
