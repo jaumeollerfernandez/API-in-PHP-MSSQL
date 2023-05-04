@@ -16,17 +16,19 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->DBconnection = $PDOconnection;
     }
 
+    /**
+     * Public functions to call
+     */
+
     function CallProcedure(string $NameProcedure, Array $Params = []){
 
-        
         $CheckIfItsMatrix = $this->_CheckIfItsMatrix($Params);
 
         switch($CheckIfItsMatrix){
-            case true:
 
+            case true:
                 $this->_PrepareProcedureQueue($NameProcedure, $Params);
                 $this->_BindParamsAndExecuteProcedureQueue($Params);
-
                 break;
 
             case false:
@@ -40,16 +42,26 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
             default:
                 echo('Error in your Procedure Call');
         }
-            
-
     }
 
-    function _CheckIfItsMatrix($Matrix){
+    /**
+     * Internal functions
+     */
+
+    function _RenderXML(): void{
+        $this->_SetXMLheader();
+        foreach($this->result[0] as $xml){
+            $obj_xml = simplexml_load_string($xml);
+        }
+        echo $obj_xml->asXML();
+    }
+    
+    function _CheckIfItsMatrix(Array $Matrix):bool{
         $result = is_array($Matrix[0]);
         return $result;
     }
     
-    function _PrepareProcedureQueue($NameProcedure, $Params){
+    function _PrepareProcedureQueue(string $NameProcedure, Array $Params): void{
         for($i = 0; $i < count($Params); $i++){
             $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
             $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
@@ -57,7 +69,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         }
     }
 
-    function _PrepareProcedureWithParams($NameProcedure, $Params){
+    function _PrepareProcedureWithParams(string $NameProcedure, Array $Params): void{
         $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
         $this->prepareProcedure($ConcatenatedString, $Params, 0);
         $this->_BindParamToProcedure($Params);
@@ -68,10 +80,10 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->prepareProcedure($NameProcedure, [], 0);
         $this->executeProcedure($this->PreparedProcedure);
         $this->fetchExecutionProcedure();
-        $this->RenderXML();
+        $this->_RenderXML();
     }
 
-    function _BindParamsAndExecuteProcedureQueue(Array $Params){
+    function _BindParamsAndExecuteProcedureQueue(Array $Params): void{
         try{
             for($j = 0; $j < count($this->_ProcedureQueue); $j++){
                 print_r($Params[$j]);
@@ -102,11 +114,11 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->PreparedProcedure->execute();
     }
 
-    function _InsertProcedureIntoQueue($Procedure){
+    function _InsertProcedureIntoQueue($Procedure): void{
         array_push($this->_ProcedureQueue, $Procedure);
     }
 
-    function _PrepareStringToPrepareProcedure(string $name_procedure, $ArrayOfParams){
+    function _PrepareStringToPrepareProcedure(string $name_procedure, $ArrayOfParams): string{
 
         $EXEC = "EXEC ";
         $Interrogation = $this->_ObtainNumberOfInterrogations($ArrayOfParams);
@@ -114,7 +126,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         return $ConcatenatedString;
     }
 
-    function _ObtainNumberOfInterrogations(Array $Array){
+    function _ObtainNumberOfInterrogations(Array $Array): string{
         $result = [];
         $CheckIfItsMatrix = $this->_CheckIfItsMatrix($Array);
         
@@ -127,7 +139,8 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     }
                 }
             }
-        }else{
+        }
+        else{
             if(count($Array) > 0){
                 for($i = 1; $i <= count($Array); $i++){
                     array_push($result, "?");
@@ -136,7 +149,6 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     }
                 }
             }
-
         }
         return implode("",$result);
     }
@@ -145,16 +157,8 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     {   
         $this->result = $this->PreparedProcedure->fetchAll();
     }
-    
-    function RenderXML():void{
-        $this->_SetXMLheader();
-        foreach($this->result[0] as $xml){
-            $obj_xml = simplexml_load_string($xml);
-        }
-        echo $obj_xml->asXML();
-    }
-    
-    function _SetXMLheader(){
+
+    function _SetXMLheader(): void{
         header('Content-type: text/xml');
     }
     
