@@ -1,5 +1,5 @@
 CREATE DATABASE shop;
-USE test;
+USE shop;
 -- DROP TABLE productos
 -- Drop procedure get_products
 CREATE TABLE productos (
@@ -8,7 +8,7 @@ CREATE TABLE productos (
   descripcion TEXT,
   url_imagen VARCHAR(255)
 );
-USE test;
+USE shop;
 INSERT INTO productos (nombre, precio, descripcion, url_imagen)
 VALUES
   ('iPhone', 999.99, 'Iphone Pocho me gusta Android', 'https://i.dummyjson.com/data/products/2/1.jpg'),
@@ -17,7 +17,7 @@ VALUES
 	('Samsumg galaxio', 39.99, 'Cual es el tabaco mas caro que hay', 'https://i.dummyjson.com/data/products/5/1.jpg'),
 	('Mi moto alpina derrapante', 312339.99, 'Mi moto alpina derrapante', 'https://i.dummyjson.com/data/products/7/1.jpg')
 
-USE test;
+USE shop;
 SELECT * FROM productos
 
 

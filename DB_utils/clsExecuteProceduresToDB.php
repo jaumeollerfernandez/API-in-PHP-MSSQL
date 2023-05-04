@@ -32,7 +32,8 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                 break;
 
             case false:
-                if (count($Params) > 0){
+                $ItHasParams = $this->_CheckIfItsEmpty($Params);
+                if ($ItHasParams == false){
                    $this->_PrepareProcedureWithParams($NameProcedure, $Params);
                 }else{
                     $this->_PrepareProcedureWithoutParams($NameProcedure);
@@ -53,11 +54,25 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         foreach($this->result[0] as $xml){
             $obj_xml = simplexml_load_string($xml);
         }
+        ob_clean();
         echo $obj_xml->asXML();
     }
     
     function _CheckIfItsMatrix(Array $Matrix):bool{
-        $result = is_array($Matrix[0]);
+        try{
+            $result = is_array($Matrix[0]);
+        }catch(PDOException $error){
+            echo($error);
+        }
+        return $result;
+    }
+
+    function _CheckIfItsEmpty(Array $Array){
+        try{
+            $result = empty($Array);
+        }catch(PDOException $error){
+            echo($error);
+        }
         return $result;
     }
     
