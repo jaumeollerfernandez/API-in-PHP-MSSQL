@@ -48,6 +48,40 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     /**
      * Internal functions
      */
+    
+    function _PrepareProcedureQueue(string $NameProcedure, Array $Params): void{
+        for($i = 0; $i < count($Params); $i++){
+            $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
+            $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
+            $this->_InsertProcedureIntoQueue($this->PreparedProcedure);
+        }
+    }
+    
+    function _PrepareProcedureWithParams(string $NameProcedure, Array $Params): void{
+        $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
+        $this->prepareProcedure($ConcatenatedString, $Params, 0);
+        $this->_BindParamToProcedure($Params);
+        $this->executeProcedure($this->PreparedProcedure);
+    }
+
+    function _PrepareProcedureWithoutParams($NameProcedure){
+        $this->prepareProcedure($NameProcedure, [], 0);
+        $this->executeProcedure($this->PreparedProcedure);
+        $this->fetchExecutionProcedure();
+        $this->_RenderXML();
+    }
+
+    function _BindParamsAndExecuteProcedureQueue(Array $Params): void{
+        try{
+            for($j = 0; $j < count($this->_ProcedureQueue); $j++){
+                print_r($Params[$j]);
+                $this->_BindParamToProcedure($Params[$j]);
+                $this->executeProcedure();
+            }
+        }catch(PDOException $error){
+            echo($error);
+        }
+    }
 
     function _RenderXML(): void{
         $this->_SetXMLheader();
@@ -76,39 +110,6 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         return $result;
     }
     
-    function _PrepareProcedureQueue(string $NameProcedure, Array $Params): void{
-        for($i = 0; $i < count($Params); $i++){
-            $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
-            $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
-            $this->_InsertProcedureIntoQueue($this->PreparedProcedure);
-        }
-    }
-
-    function _PrepareProcedureWithParams(string $NameProcedure, Array $Params): void{
-        $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
-        $this->prepareProcedure($ConcatenatedString, $Params, 0);
-        $this->_BindParamToProcedure($Params);
-        $this->executeProcedure($this->PreparedProcedure);
-    }
-
-    function _PrepareProcedureWithoutParams($NameProcedure){
-        $this->prepareProcedure($NameProcedure, [], 0);
-        $this->executeProcedure($this->PreparedProcedure);
-        $this->fetchExecutionProcedure();
-        $this->_RenderXML();
-    }
-
-    function _BindParamsAndExecuteProcedureQueue(Array $Params): void{
-        try{
-            for($j = 0; $j < count($this->_ProcedureQueue); $j++){
-                print_r($Params[$j]);
-                $this->_BindParamToProcedure($Params[$j]);
-                $this->executeProcedure();
-            }
-        }catch(PDOException $error){
-            echo($error);
-        }
-    }
     
     function prepareProcedure(string $name_procedure, array $params = []): void
     {
