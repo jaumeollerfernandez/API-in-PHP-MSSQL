@@ -44,10 +44,23 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     }
 
+    function _CheckIfItsMatrix($Matrix){
+        $result = is_array($Matrix[0]);
+        return $result;
+    }
+    
+    function _PrepareProcedureQueue($NameProcedure, $Params){
+        for($i = 0; $i < count($Params); $i++){
+            $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
+            $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
+            $this->_InsertProcedureIntoQueue($this->PreparedProcedure);
+        }
+    }
+
     function _PrepareProcedureWithParams($NameProcedure, $Params){
         $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
         $this->prepareProcedure($ConcatenatedString, $Params, 0);
-        $this->BindParamToProcedure($Params);
+        $this->_BindParamToProcedure($Params);
         $this->executeProcedure($this->PreparedProcedure);
     }
 
@@ -58,38 +71,25 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->RenderXML();
     }
 
-    function _PrepareProcedureQueue($NameProcedure, $Params){
-        for($i = 0; $i < count($Params); $i++){
-            $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
-            $this->prepareProcedure($ConcatenatedString, $Params[$i], count($Params[0]));
-            $this->_InsertProcedureIntoQueue($this->PreparedProcedure);
-        }
-    }
-
     function _BindParamsAndExecuteProcedureQueue(Array $Params){
         try{
             for($j = 0; $j < count($this->_ProcedureQueue); $j++){
                 print_r($Params[$j]);
-                $this->BindParamToProcedure($Params[$j]);
-                $this->executeProcedure($this->PreparedProcedure);
+                $this->_BindParamToProcedure($Params[$j]);
+                $this->executeProcedure();
             }
         }catch(PDOException $error){
             echo($error);
         }
     }
     
-    function _CheckIfItsMatrix($Matrix){
-        $result = is_array($Matrix[0]);
-        return $result;
-    }
-
     function prepareProcedure(string $name_procedure, array $params = []): void
     {
         $this->ProcedureName = $name_procedure;
         $this->PreparedProcedure = $this->DBconnection->prepare($this->ProcedureName);
     }
 
-    function BindParamToProcedure($ArrayOfParams){
+    function _BindParamToProcedure($ArrayOfParams){
         $this->_id = 1;
         for($j = 1; $j <= count($ArrayOfParams); $j++){
             $this->PreparedProcedure->bindParam($this->_id,$ArrayOfParams[$j-1]);
@@ -97,9 +97,9 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         }
     }   
 
-    function executeProcedure($Procedure): void
+    function executeProcedure(): void
     {
-        $Procedure->execute();
+        $this->PreparedProcedure->execute();
     }
 
     function _InsertProcedureIntoQueue($Procedure){
@@ -140,9 +140,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         }
         return implode("",$result);
     }
-    
-    
-    
+
     function fetchExecutionProcedure(): void
     {   
         $this->result = $this->PreparedProcedure->fetchAll();
@@ -160,5 +158,4 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         header('Content-type: text/xml');
     }
     
-}  
-?>
+}
