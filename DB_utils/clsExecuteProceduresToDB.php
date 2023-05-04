@@ -16,9 +16,11 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->DBconnection = $PDOconnection;
     }
 
-    function CallProcedure(string $NameProcedure, Array $Params = [], string $TypeOfParam = 'single'){
+    function CallProcedure(string $NameProcedure, Array $Params = []){
 
+        
         $CheckIfItsMatrix = $this->_CheckIfItsMatrix($Params);
+        var_dump($CheckIfItsMatrix);
 
         switch($CheckIfItsMatrix){
             case true:
@@ -32,11 +34,6 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     for($j = 0; $j < count($this->_ProcedureQueue); $j++){
                         print_r($Params[$j]);
                         $this->BindParamToProcedure($Params[$j]);
-                        var_dump($this->PreparedProcedure);
-                        echo('<br>');
-                        echo('<br>');
-                        echo('<br>');
-                        echo('<br>');
                         $this->executeProcedure($this->PreparedProcedure);
                     }
                 }catch(PDOException $error){
@@ -49,6 +46,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
                     $ConcatenatedString = $this->_PrepareStringToPrepareProcedure($NameProcedure, $Params);
                     $this->prepareProcedure($ConcatenatedString, $Params, 0);
                     $this->BindParamToProcedure($Params);
+                    $this->executeProcedure($this->PreparedProcedure);
                 }else{
                     $this->prepareProcedure($NameProcedure, [], 0);
                     $this->executeProcedure($this->PreparedProcedure);
@@ -139,15 +137,5 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         header('Content-type: text/xml');
     }
     
-}
-// function BindParamToProcedure($MatrixOfParams, $NumberOfFields){
-//     $id = 1;
-//     for($i = 0; $i < count($MatrixOfParams); $i++){
-//         for($j = 1; $j <= $NumberOfFields+1; $j++){
-//             echo($MatrixOfParams[$i][$j-1]);
-//             $this->PreparedProcedure->bindParam($id,$MatrixOfParams[$i][$j-1]);
-//             $id++;
-//         }
-//     }
-// }    
+}  
 ?>
