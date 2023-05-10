@@ -9,7 +9,7 @@ class clsDbController{
 
     function __construct(){}
 
-    function AddMSSQLConnectionToDB($sql, $port, $DBname, $user, $pwd){
+    function AddConnectionToDB($sql, $port, $DBname, $user, $pwd){
         $this->DBconnection = new clsConnectToDB($sql, $port, $DBname, $user, $pwd);
         $this->DBconnection->initConnection();
         $this->ProcedureExecute = new clsExecuteProceduresToDB($this->DBconnection->getPDODB());

@@ -1,6 +1,6 @@
 <?php
 
-include_once __DIR__."//////////interface/ConnectionDbInterface.php";
+include_once __DIR__."/interface/ConnectionDbInterface.php";
 
 
 class clsConnectToDB implements ConnectionDbInterface{
