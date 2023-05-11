@@ -1,6 +1,6 @@
 
-
-CREATE   function sf_sap_user_exists(@user_id nvarchar(255))
+USE WS_API_07;
+CREATE function sf_sap_user_exists(@user_id nvarchar(255))
 RETURNS INT
 as
 

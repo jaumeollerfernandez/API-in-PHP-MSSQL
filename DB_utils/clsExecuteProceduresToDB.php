@@ -8,7 +8,7 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
     private string $ProcedureName;
     private $PreparedProcedure;
     private Array $_ProcedureQueue = [];
-    private Array $result;
+    private $result = [];
     private int $_id = 1;
 
     function __construct(PDO $PDOconnection)
@@ -45,6 +45,10 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         }
     }
 
+    function GetResult(){
+        return $this->result;
+    }
+
     /**
      * Internal functions
      */
@@ -62,13 +66,13 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->prepareProcedure($ConcatenatedString, $Params, 0);
         $this->_BindParamToProcedure($Params);
         $this->executeProcedure($this->PreparedProcedure);
+        $this->fetchExecutionProcedure();
     }
 
     function _PrepareProcedureWithoutParams($NameProcedure){
         $this->prepareProcedure($NameProcedure, [], 0);
         $this->executeProcedure($this->PreparedProcedure);
         $this->fetchExecutionProcedure();
-        $this->_RenderXML();
     }
 
     function _BindParamsAndExecuteProcedureQueue(Array $Params): void{
@@ -82,7 +86,11 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
             echo($error);
         }
     }
-
+    
+    function _SetXMLheader(): void{
+        header('Content-type: text/xml');
+    }
+    
     function _RenderXML(): void{
         $this->_SetXMLheader();
         foreach($this->result[0] as $xml){
@@ -174,8 +182,5 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
         $this->result = $this->PreparedProcedure->fetchAll();
     }
 
-    function _SetXMLheader(): void{
-        header('Content-type: text/xml');
-    }
     
 }

@@ -1,4 +1,4 @@
-
+USE WS_API_07;
 /********************************************************************************************************************/
 /*sp_sap_utils_XMLrespons
   Description: genera respuesta XML  
@@ -51,12 +51,13 @@ go
    @name: IN -> NVARCHAR(255)  
 */
 /********************************************************************************************************************/
-
-CREATE or alter procedure sp_sap_user_register
+USE WS_API_07;
+create or alter procedure sp_sap_user_regist
     @user_id nvarchar(255),@pwd nvarchar(255),@name nvarchar(255)
 as
 
 begin
+    SET NOCOUNT ON 
     DECLARE @ret INT;
     DECLARE @exists INT;
     set @ret=-1;
@@ -71,7 +72,7 @@ begin
     if(@@rowcount=1)
         BEGIN
             set @ret=0;
-            SELECT * from _sap_users where user_id = @user_id FOR XML PATH(''), ROOT('USER')
+            SELECT * from _sap_users where user_id = @user_id FOR XML auto;
 
         END
     else
@@ -97,7 +98,7 @@ go
 /********************************************************************************************************************/
 
 
-CREATE or alter procedure sp_sap_user_login
+CREATE or alter procedure sp_sap_user_log
     @user_id nvarchar(255),@pwd nvarchar(255)
 as
 

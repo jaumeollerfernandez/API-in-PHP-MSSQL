@@ -2,7 +2,7 @@ CREATE DATABASE WS_API_07;
 
 use WS_API_07;
 
-DROP TABLE IF EXISTS _sap_users;
+DROP TABLE _sap_users;
 
 create table _sap_users
 (
@@ -70,4 +70,4 @@ DROP TABLE IF EXISTS _sap_conn;
 )
 go
 
-SELECT * from _sap_conn;
+SELECT * from _sap_users;

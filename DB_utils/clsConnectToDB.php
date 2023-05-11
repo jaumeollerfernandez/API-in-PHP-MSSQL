@@ -12,8 +12,7 @@ class clsConnectToDB implements ConnectionDbInterface{
     private string $_Password = '';
     private ?PDO $Connection = null;
 
-    // PDO::FETCH_OBJ
-    function __construct($SQLserver, $Port, $DBname, $User, $Password)
+    function __construct(string $SQLserver, string $Port, string $DBname, string $User, string  $Password)
     {
         $this->_sqlServer = $SQLserver;
         $this->_port = $Port;
