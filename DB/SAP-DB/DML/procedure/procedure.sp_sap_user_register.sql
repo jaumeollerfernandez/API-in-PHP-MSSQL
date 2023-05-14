@@ -12,7 +12,7 @@ begin
 
     if(@exists = 0) begin
         insert into _sap_users (user_id,pwd,user_name)
-        values (@user_id,@pwd,@name)
+        values (@user_id,PWDENCRYPT(@pwd),@name)
     end
 
     if(@@rowcount=1)

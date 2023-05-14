@@ -1,6 +1,4 @@
-CREATE DATABASE WS_API_07;
-
-use WS_API_07;
+USE WS_API_07;
 
 DROP TABLE _sap_users;
 
@@ -11,8 +9,7 @@ create table _sap_users
     nickname  nvarchar(255),
     user_name nvarchar(255) not null,
     surname   nvarchar(255),
-    pwd       nvarchar(255) not null,
-    pwd_crypt nvarchar(255),
+    pwd       varbinary(255) not null,
     phone     nvarchar(255),
     _mndt     int              default 0,
     _created  datetime         default getdate(),
