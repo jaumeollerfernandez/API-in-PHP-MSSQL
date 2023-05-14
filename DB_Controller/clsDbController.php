@@ -25,14 +25,18 @@ class clsDbController{
         $this->XMLresponse = $this->ProcedureExecute->getResult();
     }
 
-    function _ObtainResult($RenderMode){
+    function ObtainResult($RenderMode){
         switch($RenderMode){
             case 'XML':
                 $this->_RenderXML($this->XMLresponse);
                 break;
-            case 'None':
+            case 'HTML':
                 $this->_RenderHTML($this->XMLresponse);
                 //To Do: Think other methods to add.
+                break;
+            case 'OBJECT':
+                // $this->_RenderOBJECT($this->XMLresponse);
+                return $this->XMLresponse;
                 break;
             default:
                 echo('Must use XML, None, in _ObtainResult, no cases found. ');
@@ -59,6 +63,13 @@ class clsDbController{
         }
         ob_clean();
         echo $obj_xml->asXML();
+    }
+
+    function _RenderOBJECT($result){
+        foreach($result[0] as $xml){
+            $obj_xml = simplexml_load_string($xml);
+        }
+        return $obj_xml;
     }
 }
 
