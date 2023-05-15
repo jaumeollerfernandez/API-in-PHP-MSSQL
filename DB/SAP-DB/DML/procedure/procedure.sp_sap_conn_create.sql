@@ -4,7 +4,7 @@
    @user_id: IN -> PK - UniqueKey 
 */
 /********************************************************************************************************************/
-CREATE   procedure sp_sap_conn_create
+CREATE OR ALTER PROCEDURE sp_sap_conn_create
     @user_id nvarchar(255)
 as
 

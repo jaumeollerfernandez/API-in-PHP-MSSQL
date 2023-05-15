@@ -1,7 +1,5 @@
-CREATE or alter procedure sp_sap_user_log
-    @user_id nvarchar(255),@pwd nvarchar(255)
-as
-
+CREATE OR ALTER PROCEDURE  sp_sap_user_log @user_id nvarchar(255), @pwd nvarchar(255)
+AS
 begin
     SET NOCOUNT ON
     DECLARE @ret INT;

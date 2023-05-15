@@ -49,8 +49,6 @@ go
 
 -- );
 
-use WS_API_07
-
 DROP TABLE IF EXISTS _sap_conn;
 
 
