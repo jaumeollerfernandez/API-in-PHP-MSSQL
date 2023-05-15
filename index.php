@@ -9,5 +9,5 @@ $test->AddConnectionToDB("172.17.0.1","14333","WS_API_07","SA","@Asix13021997");
 // $test->ExecuteProcedure("sp_sap_user_register",['Chouso', '1234', 'chus']);
 $test->ExecuteProcedure("sp_sap_user_log", ['Chouso', '1234']);
 
-// $test->ObtainResult('XML');
+$test->ObtainResult('XML');
 ?>
