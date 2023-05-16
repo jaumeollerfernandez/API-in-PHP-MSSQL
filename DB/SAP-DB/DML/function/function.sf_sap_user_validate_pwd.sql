@@ -12,8 +12,6 @@ BEGIN
     FROM _sap_users
     WHERE user_id = @user_id;
 
-    
-
     return @isMatch;
 END
 GO

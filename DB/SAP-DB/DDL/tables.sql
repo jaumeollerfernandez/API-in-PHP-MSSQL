@@ -1,7 +1,6 @@
 USE WS_API_07;
-
-DROP TABLE _sap_users;
-
+DROP TABLE IF EXISTS _sap_conn;
+DROP TABLE IF EXISTS _sap_users;
 create table _sap_users
 (
     user_id   nvarchar(255) not null

@@ -1,5 +1,6 @@
 SELECT * FROM sysobjects where xtype='fn';
-
+USE master;
+DROP TABLE _sap_users;
 SELECT * from _sap_users;
 
 SELECT * from _sap_conn;
