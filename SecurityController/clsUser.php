@@ -10,15 +10,16 @@ class clsUser{
     private $XMLresponseFromDB;
     private clsDbController $DBController;
 
-    public function __construct($action, $params){
-        $this->action = $action;
-        $this->params = $params;
+    public function __construct(){
+
         $this->DBController = new clsDbController();
         $this->GenerateConnectionToDB();
         $this->DetectCookieOnClient();
     }
 
-    public function ExecuteAction(){
+    public function ExecuteAction($action, $params){
+        $this->action = $action;
+        $this->params = $params;
         switch(strtolower($this->action)){
             case 'login':
                 $this->LogIn();
@@ -59,6 +60,8 @@ class clsUser{
             $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
             $this->_RenderXML($this->XMLresponseFromDB);
+        }else{
+            $this->_RenderXMLError();
         }
     }
 
@@ -67,6 +70,10 @@ class clsUser{
     }
 
     protected function Register(){
+        $PreparedParams = $this->_PrepareParams('Register');
+        $this->DBController->ExecuteProcedure("sp_sap_user_register", $PreparedParams);
+        $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
+        $this->_RenderXML($this->XMLresponseFromDB);
 
     }
 
@@ -92,7 +99,7 @@ class clsUser{
     }
 
     
-    function _SetXMLheader(): void{
+    protected function _SetXMLheader(): void{
         header('Content-type: text/xml');
     }
 
@@ -108,8 +115,14 @@ class clsUser{
 
         ob_clean();
         echo $obj_xml->asXML();
+    }
+
+    protected function _RenderXMLError(){
+        $this->_SetXMLheader();
+        $obj_xml = new SimpleXMLElement('<WSresponse>Acción no realizada, error en la petición</WSresponse>');
         ob_clean();
         echo $obj_xml->asXML();
+
     }
 
     

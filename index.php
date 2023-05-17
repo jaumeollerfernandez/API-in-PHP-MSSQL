@@ -11,6 +11,8 @@ include_once __DIR__."/SecurityController/clsUser.php";
 
 // $test->ObtainResult('XML');
 
-$test = new clsUser('login', ['JJ', '1234']);
-$test->ExecuteAction();
+// $test = new clsUser('Register', ['JJ', '1234', 'Jaume']);
+// $test = new clsUser('login', ['JJ', '1234']);
+$test = new clsUser();
+$test->ExecuteAction('login', ['Chouso', '1234']);
 ?>
