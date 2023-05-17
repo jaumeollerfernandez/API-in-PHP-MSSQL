@@ -2,6 +2,7 @@ CREATE procedure sp_sap_conn_create
     @user_id nvarchar(255)
 AS
 BEGIN
+    SET NOCOUNT ON;
     DECLARE @ret int = 1;
     DECLARE @time datetime;
 

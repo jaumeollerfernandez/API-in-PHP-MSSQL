@@ -3,13 +3,14 @@ CREATE procedure sp_sap_user_login
 AS
 
 BEGIN
+
     DECLARE @ret INT;
     DECLARE @valid INT;
     set @ret=1;
 
     exec @valid = dbo.sf_sap_user_validate_pwd @user_id = @user_id,@pwd = @pwd;
 
-    if(@valid=0)
+    if(@valid=1)
     BEGIN
         set @ret=0;
         exec @ret=sp_sap_conn_create @user_id;
