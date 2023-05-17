@@ -46,8 +46,12 @@ class clsUser{
         return $this->XMLresponseFromDB;
     }
 
-    protected function GenerateConnectionToDB(){
+    public function GenerateConnectionToDB(){
         $this->DBController->AddConnectionToDB($this->IP, $this->port, $this->DataBase, $this->DataBaseUser, $this->DataBasePassword);
+    }
+
+    public function GetXMLresponseFromDB(){
+        return $this->XMLresponseFromDB;
     }
 
     protected function DetectCookieOnClient(){
