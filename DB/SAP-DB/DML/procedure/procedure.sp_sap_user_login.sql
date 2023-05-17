@@ -18,7 +18,6 @@ BEGIN
             BEGIN
                 set @ret=0;
                 exec @ret= dbo.sp_sap_conn_create @user_id;
-                -- EXEC dbo.sp_sap_session_XMLresponse @user_id;
             END
         ELSE
             BEGIN 

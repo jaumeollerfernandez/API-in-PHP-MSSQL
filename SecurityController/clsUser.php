@@ -1,25 +1,25 @@
 <?php
 
+include_once __DIR__."/../DB_Controller/clsDbController.php";
+
 class clsUser{
     private string $action;
-    private string $username;
-    private string $password;
+    private array $params;
     private string $cid;
     private bool $HasCookie;
     private $XMLresponseFromDB;
     private clsDbController $DBController;
 
-    public function __construct($action, $username, $password){
+    public function __construct($action, $params){
         $this->action = $action;
-        $this->username = $username;
-        $this->password = $password;
+        $this->params = $params;
         $this->DBController = new clsDbController();
         $this->GenerateConnectionToDB();
         $this->DetectCookieOnClient();
     }
 
     public function ExecuteAction(){
-        switch($this->action){
+        switch(strtolower($this->action)){
             case 'login':
                 $this->LogIn();
                 break;
@@ -55,9 +55,10 @@ class clsUser{
     
     protected function LogIn(){
         if($this->HasCookie == false){
-            $this->DBController->ExecuteProcedure("sp_sap_user_log", [$this->username, $this->password]);
+            $PreparedParams = $this->_PrepareParams('Login');
+            $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-            var_dump($this->XMLresponseFromDB);
+            $this->_RenderXML($this->XMLresponseFromDB);
         }
     }
 
@@ -67,6 +68,27 @@ class clsUser{
 
     protected function Register(){
 
+    }
+
+    protected function _PrepareParams($Mode){
+        $PreparedArray = [];
+        switch($Mode){
+            case 'Login':
+                array_push($PreparedArray, $this->params[0]);
+                array_push($PreparedArray, $this->params[1]);
+                return $PreparedArray;
+                break;
+            case 'Register':
+                array_push($PreparedArray, $this->params[0]);
+                array_push($PreparedArray, $this->params[1]);
+                array_push($PreparedArray, $this->params[2]);
+                return $PreparedArray;
+                break;
+            case 'Logout':
+                array_push($PreparedArray, $this->params[0]);
+                return $PreparedArray;
+                break;
+        }
     }
 
     
@@ -79,6 +101,13 @@ class clsUser{
         foreach($result[0] as $xml){
             $obj_xml = simplexml_load_string($xml);
         }
+
+        if($obj_xml == []){
+            $obj_xml = new SimpleXMLElement('<WSresponse>Acción realizada, no respuesta por parte de Procedure</WSresponse>');
+        }
+
+        ob_clean();
+        echo $obj_xml->asXML();
         ob_clean();
         echo $obj_xml->asXML();
     }

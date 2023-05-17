@@ -12,7 +12,6 @@ BEGIN
     if(@valid=0)
     BEGIN
         set @ret=0;
-        EXEC sp_sap_session_XMLresponse @user_id;
     END    
         RETURN @ret;
     END
