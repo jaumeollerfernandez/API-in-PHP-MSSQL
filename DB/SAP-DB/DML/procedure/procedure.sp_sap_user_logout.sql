@@ -1,4 +1,4 @@
-create or alter procedure sp_sap_user_logout
+create procedure sp_sap_user_logout
     @conn_guid UNIQUEIDENTIFIER
 AS
 BEGIN
