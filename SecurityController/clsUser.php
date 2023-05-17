@@ -38,12 +38,12 @@ class clsUser{
     }
 
     protected function GenerateConnectionToDB(){
-        $this->DBController->AddConnectionToDB("172.17.0.1","14333","WS_API_07","SA","@Asix13021997");
+        $this->DBController->AddConnectionToDB("172.17.0.1","14333","TEST_WS_API_07","SA","@Asix13021997");
     }
 
     protected function DetectCookieOnClient(){
-        if(isset($_COOKIE['cid'])){
-            $this->cid = $_COOKIE['cid'];
+        if(isset($_COOKIE['CID'])){
+            $this->cid = $_COOKIE['CID'];
             $this->HasCookie = true;
         }else{
             $this->HasCookie = false;
@@ -59,6 +59,10 @@ class clsUser{
             $PreparedParams = $this->_PrepareParams('Login');
             $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
+
+            //TODO Setear bien el CID
+
+            setcookie("CID", "3BC9B91E-874B-4D0E-93CD-213CBABA86C5", time()+3600);
             $this->_RenderXML($this->XMLresponseFromDB);
         }else{
             $this->_RenderXMLError();
@@ -66,6 +70,11 @@ class clsUser{
     }
 
     protected function LogOut(){
+        if($this->HasCookie == false){
+            $this->_RenderXMLError();
+        }else{
+            echo($this->HasCookie);
+        }
 
     }
 
