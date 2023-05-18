@@ -41,7 +41,7 @@ class clsResponse{
     }
 
     function setContents():void{
-        $this->responseXML = $this->objxml->ReadFileAsXML('Server API/xml/out.xml');
+        $this->responseXML = $this->objxml->ReadFileAsXML('Server_API/xml/out.xml');
         $this->setServerID();
         $this->setServerTime();
         $this->setExecutionTime();

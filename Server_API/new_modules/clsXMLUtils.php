@@ -49,7 +49,7 @@ class clsXMLUtils{
     }
 
     public function saveXML($pXML){
-        $route = __DIR__.'/Server API/xml/response/' . $this->GenerateHash() . '.xml';
+        $route = __DIR__.'/Server_API/xml/response/' . $this->GenerateHash() . '.xml';
         return $pXML->asXML($route);
     }
 
