@@ -53,8 +53,14 @@ class clsDbController{
         foreach($result[0] as $xml){
             $obj_xml = simplexml_load_string($xml);
         }
+
+        if($obj_xml == []){
+            $obj_xml = new SimpleXMLElement('<WSresponse>Acción realizada</WSresponse>');
+        }
+
         ob_clean();
         echo $obj_xml->asXML();
+
     }
 
     function _RenderHTML($result){

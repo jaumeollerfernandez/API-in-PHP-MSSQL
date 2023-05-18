@@ -1,6 +1,5 @@
-USE WS_API_07;
-DROP TABLE IF EXISTS _sap_conn;
 DROP TABLE IF EXISTS _sap_users;
+
 create table _sap_users
 (
     user_id   nvarchar(255) not null
@@ -8,7 +7,7 @@ create table _sap_users
     nickname  nvarchar(255),
     user_name nvarchar(255) not null,
     surname   nvarchar(255),
-    pwd       varbinary(255) not null,
+    pwd       varbinary(64) not null,
     phone     nvarchar(255),
     _mndt     int              default 0,
     _created  datetime         default getdate(),
@@ -48,6 +47,8 @@ go
 
 -- );
 
+use WS_API_07
+
 DROP TABLE IF EXISTS _sap_conn;
 
 
@@ -65,4 +66,4 @@ DROP TABLE IF EXISTS _sap_conn;
 )
 go
 
-SELECT * from _sap_users;
+SELECT * from _sap_conn;

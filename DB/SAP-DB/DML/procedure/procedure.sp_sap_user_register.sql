@@ -1,4 +1,4 @@
-create or alter procedure sp_sap_user_register
+create procedure sp_sap_user_register
     @user_id nvarchar(255),@pwd nvarchar(255),@name nvarchar(255)
 as
 
@@ -13,21 +13,11 @@ begin
     if(@exists = 0) begin
         insert into _sap_users (user_id,pwd,user_name)
         values (@user_id,PWDENCRYPT(@pwd),@name)
+        set @ret=0;
+        EXEC sp_sap_utils_XMlresponse @ret,@message = 'usuario registrado';
     end
-
-    if(@@rowcount=1)
-        BEGIN
-            set @ret=0;
-            SELECT * from _sap_users where user_id = @user_id FOR XML auto;
-
-        END
     else
-        begin
-            EXEC sp_sap_utils_XMlresponse @ret;
-        end
-
-
-    return @ret
+        EXEC sp_sap_utils_XMlresponse @ret,@message = 'usuario no registrado';
 
    /********************************* TEST UNITARIO*********************************
       exec sp_sap_user_register "mawwrc@gmail.com","123","marc"

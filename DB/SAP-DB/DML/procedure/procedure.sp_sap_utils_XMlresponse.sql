@@ -1,10 +1,8 @@
-create   procedure sp_sap_utils_XMlresponse
-    @response nvarchar(255)
-as
-
-begin
-
-    SELECT @response as 'response' FOR XML PATH(''), ROOT('ERROR')
+create procedure sp_sap_utils_XMlresponse
+    @error nvarchar(255),@message nvarchar(255) 
+AS
+BEGIN
+    SELECT @error AS 'error', @message AS 'message' FOR XML PATH(''), ROOT('XMLresponse')
 
     /********************************* TEST UNITARIO*********************************
        exec sp_sap_utils_XMLresponse hola;
