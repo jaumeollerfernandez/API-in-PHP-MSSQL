@@ -29,6 +29,7 @@ class clsUser{
     public function ExecuteAction($action, $params){
         $this->action = $action;
         $this->params = $params;
+        print_r($this->params);
         switch(strtolower($this->action)){
             case 'login':
                 $this->LogIn();
@@ -54,7 +55,7 @@ class clsUser{
         return $this->XMLresponseFromDB;
     }
 
-    protected function DetectCookieOnClient(){
+    public function DetectCookieOnClient(){
         if(isset($_COOKIE['CID'])){
             $this->cid = $_COOKIE['CID'];
             $this->HasCookie = true;
@@ -72,10 +73,9 @@ class clsUser{
             $PreparedParams = $this->_PrepareParams('Login');
             $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-
+            echo($this->XMLresponseFromDB);
             //TODO Setear bien el CID
-
-            setcookie("CID", "3BC9B91E-874B-4D0E-93CD-213CBABA86C5", time()+3600);
+            // setcookie("CID", "a", time()+3600);
             $this->_RenderXML($this->XMLresponseFromDB);
         }else{
             $this->_RenderXMLError();
@@ -103,14 +103,14 @@ class clsUser{
         $PreparedArray = [];
         switch($Mode){
             case 'Login':
-                array_push($PreparedArray, $this->params[0]);
-                array_push($PreparedArray, $this->params[1]);
+                array_push($PreparedArray, $this->params['user']);
+                array_push($PreparedArray, $this->params['pwd']);
                 return $PreparedArray;
                 break;
             case 'Register':
-                array_push($PreparedArray, $this->params[0]);
-                array_push($PreparedArray, $this->params[1]);
-                array_push($PreparedArray, $this->params[2]);
+                array_push($PreparedArray, $this->params['user_id']);
+                array_push($PreparedArray, $this->params['user']);
+                array_push($PreparedArray, $this->params['pwd']);
                 return $PreparedArray;
                 break;
             case 'Logout':
@@ -132,7 +132,7 @@ class clsUser{
         }
 
         if($obj_xml == []){
-            $obj_xml = new SimpleXMLElement('<WSresponse>Acción realizada, no respuesta por parte de Procedure</WSresponse>');
+            $obj_xml = new SimpleXMLElement('<WSresponse>No hay respuesta por parte del servidor</WSresponse>');
         }
 
         ob_clean();

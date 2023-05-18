@@ -26,12 +26,14 @@ if( $action_value != 'undefined'){
     $API->Validate($action_value);
     $tempErrorMethod = $API->getErrors();
     $response->appendError($tempErrorMethod);
+    $SecurityController->ExecuteAction($action_value, $response->getURLvalues());
+
 }else{
 
     $error = new clsError(1007);
     $response->setError($error);
 }     
 
+// $response->Render('XML');
 
-$response->Render('XML');
 ?>
