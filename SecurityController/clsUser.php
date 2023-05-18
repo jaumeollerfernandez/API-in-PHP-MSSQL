@@ -68,7 +68,7 @@ class clsUser{
         setcookie('cid', $this->cid, time() + 3600);
     }
 
-    protected function _ManageWithstdClass($stdClass){
+    protected function _ManageResponseFromDB($stdClass){
         $stdClassObject = $stdClass;
         $properties = get_object_vars($stdClassObject);
         $firstProperty = reset($properties);
@@ -81,13 +81,10 @@ class clsUser{
             $PreparedParams = $this->_PrepareParams('Login');
             $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-            $ManagedStdClass = $this->_ManageWithstdClass($this->XMLresponseFromDB[0]);
+            $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
             $xml = simplexml_load_string($ManagedStdClass);
-            // $test = new SimpleXMLElement($this->XMLresponseFromDB[0]);
-            print_r($xml);
-            //TODO Setear bien el CID
-            // setcookie("CID", "a", time()+3600);
-            // $this->_RenderXML($this->XMLresponseFromDB);
+            setcookie("CID", $xml->sp_sap_conn_create->conn_guid, time()+3600);
+            $this->_RenderXML($this->XMLresponseFromDB);
         }else{
             $this->_RenderXMLError();
         }
