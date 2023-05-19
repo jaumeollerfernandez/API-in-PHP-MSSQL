@@ -14,6 +14,13 @@ include_once __DIR__."/SecurityController/clsSecurityController.php";
 // $test->ExecuteAction('login', ['JJ', '1234']);
 // $test->ExecuteAction('logout', ['']);
 
+/**
+ * TO DO LIST:
+ * Registro en SERVER API: Salen como que faltan parámetros, cuando se ponen en la URL
+ * 
+ *  
+ */
+
 $Request = new clsRequest();
 $API = new clsServerAPI("Server_API/xml/web_api_0_1.xml");
 $response = new clsResponse();

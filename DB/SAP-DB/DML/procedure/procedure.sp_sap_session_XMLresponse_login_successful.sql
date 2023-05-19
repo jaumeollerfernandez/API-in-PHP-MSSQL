@@ -3,9 +3,9 @@ CREATE PROCEDURE sp_sap_session_XMLresponse_login_successful
 AS
 BEGIN
    SELECT [user].user_name, conn.conn_guid, CONVERT(int, 0) AS [error]
-   FROM _sap_users [user] 
-   where [user].user_id = @user_id 
-   FOR XML PATH(''), ELEMENTS, ROOT('XMLresponse')
+   FROM _sap_conn [user]
+       where [user].user_id = @user_id 
+   FOR XML PATH('WSresponse'), ELEMENTS, ROOT('XMLresponse')
 END
    /********************************* TEST UNITARIO*********************************
          exec sp_sap_session_XMLresponse "u1@gmail.com"

@@ -81,10 +81,11 @@ class clsUser{
             $PreparedParams = $this->_PrepareParams('Login');
             $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-            $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
-            $xml = simplexml_load_string($ManagedStdClass);
-            setcookie("CID", $xml->sp_sap_conn_create->conn_guid, time()+3600);
-            $this->_RenderXML($this->XMLresponseFromDB);
+            var_dump($this->XMLresponseFromDB);
+            // $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
+            // $xml = simplexml_load_string($ManagedStdClass);
+            // setcookie("CID", $xml->sp_sap_conn_create->conn_guid, time()+3600);
+            // $this->_RenderXML($this->XMLresponseFromDB);
         }else{
             $this->_RenderXMLError();
         }
