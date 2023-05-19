@@ -29,6 +29,7 @@ class clsUser{
     public function ExecuteAction($action, $params){
         $this->action = $action;
         $this->params = $params;
+        print_r($this->params);
         switch(strtolower($this->action)){
             case 'login':
                 $this->LogIn();
@@ -54,7 +55,7 @@ class clsUser{
         return $this->XMLresponseFromDB;
     }
 
-    protected function DetectCookieOnClient(){
+    public function DetectCookieOnClient(){
         if(isset($_COOKIE['CID'])){
             $this->cid = $_COOKIE['CID'];
             $this->HasCookie = true;
@@ -66,27 +67,37 @@ class clsUser{
     protected function SetCookieToClient(){
         setcookie('cid', $this->cid, time() + 3600);
     }
+
+    protected function _ManageResponseFromDB($stdClass){
+        $stdClassObject = $stdClass;
+        $properties = get_object_vars($stdClassObject);
+        $firstProperty = reset($properties);
+        return $firstProperty;
+
+    }
     
     protected function LogIn(){
-        if($this->HasCookie == false){
             $PreparedParams = $this->_PrepareParams('Login');
             $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
             $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-
-            //TODO Setear bien el CID
-
-            setcookie("CID", "3BC9B91E-874B-4D0E-93CD-213CBABA86C5", time()+3600);
+            $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
+            $xml = simplexml_load_string($ManagedStdClass);
+            setcookie("CID", $xml->sp_sap_conn_create->conn_guid, time()+3600);
             $this->_RenderXML($this->XMLresponseFromDB);
-        }else{
-            $this->_RenderXMLError();
-        }
     }
 
     protected function LogOut(){
-        if($this->HasCookie == false){
-            $this->_RenderXMLError();
+        if ($this->HasCookie == true) {
+            $this->cid = $_COOKIE['CID'];
+            $PreparedParams = $this->_PrepareParams('Logout');
+            $this->DBController->ExecuteProcedure("sp_sap_user_logout", $PreparedParams);
+            $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
+            $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
+            $xml = simplexml_load_string($ManagedStdClass);
+            setcookie("CID", $xml->sp_sap_conn_create->conn_guid, time()+3600);
+            $this->_RenderXML($this->XMLresponseFromDB);
         }else{
-            echo($this->HasCookie);
+            $this->_RenderXMLErrorLogout();
         }
 
     }
@@ -103,18 +114,18 @@ class clsUser{
         $PreparedArray = [];
         switch($Mode){
             case 'Login':
-                array_push($PreparedArray, $this->params[0]);
-                array_push($PreparedArray, $this->params[1]);
+                array_push($PreparedArray, $this->params['user']);
+                array_push($PreparedArray, $this->params['pwd']);
                 return $PreparedArray;
                 break;
             case 'Register':
-                array_push($PreparedArray, $this->params[0]);
-                array_push($PreparedArray, $this->params[1]);
-                array_push($PreparedArray, $this->params[2]);
+                array_push($PreparedArray, $this->params['user_id']);
+                array_push($PreparedArray, $this->params['pwd']);
+                array_push($PreparedArray, $this->params['user']);
                 return $PreparedArray;
                 break;
             case 'Logout':
-                array_push($PreparedArray, $this->params[0]);
+                array_push($PreparedArray, $this->cid);
                 return $PreparedArray;
                 break;
         }
@@ -132,7 +143,7 @@ class clsUser{
         }
 
         if($obj_xml == []){
-            $obj_xml = new SimpleXMLElement('<WSresponse>Acción realizada, no respuesta por parte de Procedure</WSresponse>');
+            $obj_xml = new SimpleXMLElement('<WSresponse>No hay respuesta por parte del servidor</WSresponse>');
         }
 
         ob_clean();
@@ -142,6 +153,13 @@ class clsUser{
     protected function _RenderXMLError(){
         $this->_SetXMLheader();
         $obj_xml = new SimpleXMLElement('<WSresponse>Acción no realizada, error en la petición</WSresponse>');
+        ob_clean();
+        echo $obj_xml->asXML();
+
+    }
+    protected function _RenderXMLErrorLogout(){
+        $this->_SetXMLheader();
+        $obj_xml = new SimpleXMLElement('<WSresponse>Debe proporcionar su CID para ello. Contacte con su administrador.</WSresponse>');
         ob_clean();
         echo $obj_xml->asXML();
 

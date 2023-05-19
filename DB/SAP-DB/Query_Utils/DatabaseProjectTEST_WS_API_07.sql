@@ -15,6 +15,7 @@ CREATE TABLE [dbo].[_sap_users] (
 
 
 GO
+
 CREATE TABLE [dbo].[_sap_conn] (
     [conn_guid]  UNIQUEIDENTIFIER DEFAULT (newid()) NOT NULL,
     [user_id]    NVARCHAR (255)   NOT NULL,
@@ -31,6 +32,27 @@ CREATE TABLE [dbo].[_sap_conn] (
 
 
 GO
+
+
+CREATE FUNCTION sf_sap_user_validate_pwd(@user_id nvarchar(255),
+    @pwd nvarchar(255))
+RETURNS INT
+AS
+BEGIN
+    DECLARE @encryptedPassword varbinary(256);
+    DECLARE @isMatch INT;
+
+    SET @encryptedPassword = PWDENCRYPT(@pwd)
+
+    SELECT @isMatch = PWDCOMPARE(@pwd, @encryptedPassword)
+    FROM _sap_users
+    WHERE user_id = @user_id;
+
+    return @isMatch;
+END
+
+GO
+
 
 
 CREATE function sf_sap_user_exists(@user_id nvarchar(255))
@@ -56,24 +78,6 @@ END
 
 GO
 
-CREATE FUNCTION sf_sap_user_validate_pwd(@user_id nvarchar(255),
-    @pwd nvarchar(255))
-RETURNS INT
-AS
-BEGIN
-    DECLARE @encryptedPassword varbinary(256);
-    DECLARE @isMatch INT;
-
-    SET @encryptedPassword = PWDENCRYPT(@pwd)
-
-    SELECT @isMatch = PWDCOMPARE(@pwd, @encryptedPassword)
-    FROM _sap_users
-    WHERE user_id = @user_id;
-
-    return @isMatch;
-END
-
-GO
 
 CREATE function sf_conn_exist(@conn_guid uniqueidentifier)
 RETURNS INT
@@ -102,6 +106,7 @@ end
 
 GO
 
+
 CREATE FUNCTION sf_sap_conn_useralreadyloggedin(@user_id NVARCHAR(255))
 RETURNS INT
 AS
@@ -115,66 +120,43 @@ END
 
 GO
 
-CREATE PROCEDURE sp_sap_conn_useralreadyloggedin
+
+
+CREATE PROCEDURE sp_sap_session_XMLresponse
     @user_id nvarchar(255)
 AS
 BEGIN
-
-    DECLARE @ret INT;
-    DECLARE @valid INT;
-    set @ret=-1;
-
-    exec @valid = dbo.sf_sap_conn_useralreadyloggedin @user_id = @user_id;
-
-    if(@valid=0)
-    BEGIN
-        set @ret=0;
-        -- EXEC sp_sap_session_XMLresponse @user_id;
-    END    
-        RETURN @ret;
-    END
-
-GO
-
-create procedure sp_sap_utils_XMlresponse
-    @error nvarchar(255),@message nvarchar(255) 
-AS
-BEGIN
-    SELECT @error AS 'error', @message AS 'message' FOR XML PATH(''), ROOT('XMLresponse')
-
-    /********************************* TEST UNITARIO*********************************
-       exec sp_sap_utils_XMLresponse hola;
+   SELECT [user].user_name, conn.conn_guid, CONVERT(int, 0) AS [error]
+   FROM _sap_users [user] 
+   JOIN _sap_conn conn 
+   ON [user].user_id = conn.user_id
+   where [user].user_id = @user_id 
+   FOR XML PATH(''), ELEMENTS, ROOT('XMLresponse')
+END
+   /********************************* TEST UNITARIO*********************************
+         exec sp_sap_session_XMLresponse "u1@gmail.com"
     *********************************************************************************/
-end
 
 GO
 
 
-CREATE   procedure sp_sap_conn_create
-    @user_id nvarchar(255)
+CREATE PROCEDURE sp_sap_conn_update_lbatch
+     @conn_guid NVARCHAR(255)
 AS
 BEGIN
+DECLARE @ret integer = 1;
+UPDATE _sap_conn  SET last_batch = GETDATE() where conn_guid = @conn_guid;
+if(@@rowcount = 1) SET @ret = 0
 
-    SET NOCOUNT ON;
-    DECLARE @ret int = 1;
-    DECLARE @time datetime;
-
-
-    SET @time = GETDATE()
-    insert into _sap_conn (user_id, cTime,last_batch)
-    values (@user_id, @time,@time)
-
-    SELECT @ret AS [ret],
-           @user_id AS [user_id],
-           @time AS [cTime],
-           @time AS [last_batch]
-    FOR XML PATH('sp_sap_conn_create'), ROOT('XMLresponse');
-    /********************************* TEST UNITARIO*********************************
-      exec sp_sap_users_login "marc@gmail.com","mac"
-    *********************************************************************************/
+return @ret;
+/*********************************************TEST UNITARIO*************************************************************
+    select * from _sap_conn
+    exec  sp_sap_conn_update_lbatch 'fdb7b93b-d47c-456f-b885-a626458fc0bf' 
+***********************************************************************************************************************/
 END
 
 GO
+
 
 CREATE procedure sp_sap_user_login
     @user_id nvarchar(255),@pwd nvarchar(255)
@@ -213,6 +195,41 @@ end
 GO
 
 
+CREATE PROCEDURE sp_sap_conn_purgue
+AS
+BEGIN
+DELETE FROM _sap_conn where  DATEDIFF(second,last_batch,GETDATE()) > 10*60; 
+/************************************************TEST UNITARIO***********************************************/
+/*
+select DATEDIFF(minute,last_batch,GETDATE()),* from _sap_conn
+
+BEGIN tran
+DELETE FROM _sap_conn where  DATEDIFF(minute,last_batch,GETDATE()) > 3; 
+rollback
+                                                                                                                           */
+/****************************************************************************************************************************/
+END
+
+GO
+
+
+CREATE PROCEDURE sp_sap_session_XMLresponse_login_successful
+    @user_id nvarchar(255)
+AS
+BEGIN
+   SELECT [user].user_name
+   FROM _sap_users [user] 
+   where [user].user_id = @user_id 
+   FOR XML PATH(''), ELEMENTS, ROOT('XMLresponse')
+END
+   /********************************* TEST UNITARIO*********************************
+         exec sp_sap_session_XMLresponse "u1@gmail.com"
+    *********************************************************************************/
+
+GO
+
+
+
 create procedure sp_sap_conn_validate
     @conn_guid UNIQUEIDENTIFIER
 AS
@@ -236,20 +253,59 @@ END
 
 GO
 
-CREATE PROCEDURE sp_sap_session_XMLresponse_login_successful
-    @user_id nvarchar(255)
+
+create procedure sp_sap_utils_XMlresponse
+    @error nvarchar(255),@message nvarchar(255) 
 AS
 BEGIN
-   SELECT [user].user_name
-   FROM _sap_users [user] 
-   where [user].user_id = @user_id 
-   FOR XML PATH(''), ELEMENTS, ROOT('XMLresponse')
-END
-   /********************************* TEST UNITARIO*********************************
-         exec sp_sap_session_XMLresponse "u1@gmail.com"
+    SELECT @error AS 'error', @message AS 'message' FOR XML PATH(''), ROOT('XMLresponse')
+
+    /********************************* TEST UNITARIO*********************************
+       exec sp_sap_utils_XMLresponse hola;
     *********************************************************************************/
+end
 
 GO
+
+CREATE PROCEDURE sp_sap_conn_useralreadyloggedin
+    @user_id nvarchar(255), @pwd nvarchar(255)
+AS
+BEGIN
+
+    DECLARE @ret INT;
+    DECLARE @valid INT;
+    set @ret=-1;
+
+    exec @valid = dbo.sf_sap_conn_useralreadyloggedin @user_id = @user_id;
+
+    if(@valid=0)
+        BEGIN
+            EXEC dbo.sp_sap_utils_XMlresponse @ret, @message = 'Login autorizado, cookie correcta';
+        END    
+    ELSE
+        BEGIN
+            EXEC dbo.sp_sap_user_login @user_id, @pwd;
+        END
+
+    END
+
+GO
+
+
+create procedure sp_sap_user_logout
+    @conn_guid UNIQUEIDENTIFIER
+AS
+BEGIN
+DECLARE @ret integer = 1
+   DELETE FROM _sap_conn where conn_guid = @conn_guid 
+
+   if(@@rowcount = 1) SET @ret = 0;
+
+   EXEC sp_sap_utils_XMlresponse @ret,@message = 'usuario desconectado';
+END
+
+GO
+
 
 create procedure sp_sap_user_register
     @user_id nvarchar(255),@pwd nvarchar(255),@name nvarchar(255)
@@ -279,70 +335,33 @@ end
 
 GO
 
-create procedure sp_sap_user_logout
-    @conn_guid UNIQUEIDENTIFIER
-AS
-BEGIN
-DECLARE @ret integer = 1
-   DELETE FROM _sap_conn where conn_guid = @conn_guid 
-
-   if(@@rowcount = 1) SET @ret = 0;
-
-   EXEC sp_sap_utils_XMlresponse @ret,@message = 'usuario desconectado';
-END
-
-GO
-
-
-CREATE PROCEDURE sp_sap_session_XMLresponse
+CREATE procedure sp_sap_conn_create
     @user_id nvarchar(255)
 AS
 BEGIN
-   SELECT [user].user_name, conn.conn_guid, CONVERT(int, 0) AS [error]
-   FROM _sap_users [user] 
-   JOIN _sap_conn conn 
-   ON [user].user_id = conn.user_id
-   where [user].user_id = @user_id 
-   FOR XML PATH(''), ELEMENTS, ROOT('XMLresponse')
-END
-   /********************************* TEST UNITARIO*********************************
-         exec sp_sap_session_XMLresponse "u1@gmail.com"
+
+    SET NOCOUNT ON;
+    DECLARE @ret int = 1;
+    DECLARE @time datetime;
+	DECLARE @conn_guid uniqueidentifier;
+
+
+    SET @time = GETDATE()
+    insert into _sap_conn (user_id, cTime,last_batch)
+    values (@user_id, @time,@time)
+
+	SET @conn_guid = (SELECT conn_guid FROM _sap_conn WHERE user_id = @user_id);
+
+    SELECT @ret AS [ret],
+           @user_id AS [user_id],
+           @time AS [cTime],
+           @time AS [last_batch],
+           @conn_guid AS [conn_guid]
+		FOR XML PATH('sp_sap_conn_create'), ROOT('XMLresponse');
+    /********************************* TEST UNITARIO*********************************
+      exec sp_sap_users_login "marc@gmail.com","mac"
     *********************************************************************************/
-
-GO
-
-CREATE PROCEDURE sp_sap_conn_purgue
-AS
-BEGIN
-DELETE FROM _sap_conn where  DATEDIFF(second,last_batch,GETDATE()) > 10*60; 
-/************************************************TEST UNITARIO***********************************************/
-/*
-select DATEDIFF(minute,last_batch,GETDATE()),* from _sap_conn
-
-BEGIN tran
-DELETE FROM _sap_conn where  DATEDIFF(minute,last_batch,GETDATE()) > 3; 
-rollback
-                                                                                                                           */
-/****************************************************************************************************************************/
 END
 
 GO
-
-CREATE PROCEDURE sp_sap_conn_update_lbatch
-     @conn_guid NVARCHAR(255)
-AS
-BEGIN
-DECLARE @ret integer = 1;
-UPDATE _sap_conn  SET last_batch = GETDATE() where conn_guid = @conn_guid;
-if(@@rowcount = 1) SET @ret = 0
-
-return @ret;
-/*********************************************TEST UNITARIO*************************************************************
-    select * from _sap_conn
-    exec  sp_sap_conn_update_lbatch 'fdb7b93b-d47c-456f-b885-a626458fc0bf' 
-***********************************************************************************************************************/
-END
-
-GO
-
 

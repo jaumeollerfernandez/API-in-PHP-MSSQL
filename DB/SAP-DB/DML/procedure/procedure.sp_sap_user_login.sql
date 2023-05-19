@@ -11,19 +11,14 @@ BEGIN
 
     exec @validpwd = dbo.sf_sap_user_validate_pwd @user_id = @user_id, @pwd = @pwd;
 
-    IF(@validpwd=1)
-    BEGIN
-        EXEC @valid = dbo.sp_sap_conn_useralreadyloggedin @user_id = @user_id;
-        IF(@valid=0)
-            BEGIN
-                set @ret=0;
-                exec @ret= dbo.sp_sap_conn_create @user_id;
-            END
-        ELSE
-            BEGIN 
-                 EXEC dbo.sp_sap_utils_XMlresponse @ret, @message = 'Error en el proceso de Login. Vigile que no este ya en el servicio o que el usuario o la contraseña sean correctos';
-            END
-    END
+    IF(@validpwd=0)
+        BEGIN
+            EXEC @valid = dbo.sp_sap_conn_useralreadyloggedin @user_id = @user_id;
+            IF(@valid=0)
+                BEGIN
+                    exec @ret= dbo.sp_sap_conn_create @user_id;
+                END
+        END
 
    ELSE
         BEGIN 

@@ -1,10 +1,23 @@
-CREATE FUNCTION sf_sap_conn_useralreadyloggedin(@user_id NVARCHAR(255))
+CREATE or alter function sf_sap_conn_useralreadyloggedin (@user_id nvarchar(255))
 RETURNS INT
-AS
-BEGIN
-    DECLARE @response INT;
-    SET @response = 0;
-    IF ( (SELECT COUNT(*) FROM _sap_conn WHERE user_id = @user_id) = 1)
+as
+
+begin
+DECLARE @response int;
+
+SET @response = 0;
+IF ( (SELECT count(*) from _sap_conn where user_id = @user_id) = 1)
+    BEGIN
         SET @response = -1;
-    RETURN @response;
+    END
+
+
+RETURN @response
+
+/********************************* TEST UNITARIO*********************************
+DECLARE @ret INT;
+EXEC @ret = sf_if_exist_user @user_id = 'ely@gmail.com' ;
+select @ret;
+*********************************************************************************/
 END
+go

@@ -4,13 +4,17 @@ class clsResponse{
     private clsXMLUtils $objxml;
     private $responseXML;
     private clsRequest $request;
-    private array $URLvalues;
+    public array $URLvalues;
     private array $arrErrors = [];
 
     function __construct(){
         $this->request = new clsRequest();
         $this->URLvalues = $this->request->getALLvaluesURL();
         $this->objxml = new clsXMLUtils();
+    }
+
+    public function getURLvalues(){
+        return $this->URLvalues;
     }
 
     function appendError(array $pArrayAllErrors):void{

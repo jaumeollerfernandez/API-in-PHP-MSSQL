@@ -22,6 +22,10 @@ class clsExecuteProceduresToDB implements ControllerDataBaseInterface{
 
     function CallProcedure(string $NameProcedure, Array $Params = []){
 
+        /**
+         * NOTE: Checking a Matrix is because you can put a Matrix in DBController params and will execute multiple times the procedure called. This was intended because on the first thought I didn't know if it will be one procedure each time or multiples. This part can be ignored, and see the code from "case:false" in the switch below.
+         */
+
         $CheckIfItsMatrix = $this->_CheckIfItsMatrix($Params);
 
         switch($CheckIfItsMatrix){
