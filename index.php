@@ -7,19 +7,10 @@ include_once __DIR__."/Server_API/new_modules/clsError.php";
 include_once __DIR__."/SecurityController/clsUser.php";
 include_once __DIR__."/SecurityController/clsSecurityController.php";
 
-// $test = new clsUser('Register', ['JJ', '1234', 'Jaume']);
-// $test = new clsUser('login', ['JJ', '1234']);
-// $test = new clsUser("172.17.0.1","14333","TEST_WS_API_07","SA","@Asix13021997");
-// $test->ExecuteAction('register', ['JJ', '1234', 'Jaume']);
-// $test->ExecuteAction('login', ['JJ', '1234']);
-// $test->ExecuteAction('logout', ['']);
-
 /**
  * TO DO LIST:
  * Registro en SERVER API: Salen como que faltan parámetros, cuando se ponen en la URL
- * 
- * La password es mas insegura que dejar tu billetera fuera del Salines. Solucionar procedures de validación de pwd
- * 
+ *  
  *  
  */
 

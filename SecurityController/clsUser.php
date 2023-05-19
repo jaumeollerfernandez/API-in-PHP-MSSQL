@@ -120,8 +120,8 @@ class clsUser{
                 break;
             case 'Register':
                 array_push($PreparedArray, $this->params['user_id']);
-                array_push($PreparedArray, $this->params['user']);
                 array_push($PreparedArray, $this->params['pwd']);
+                array_push($PreparedArray, $this->params['user']);
                 return $PreparedArray;
                 break;
             case 'Logout':
