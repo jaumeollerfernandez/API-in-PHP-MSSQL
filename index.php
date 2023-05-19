@@ -18,6 +18,8 @@ include_once __DIR__."/SecurityController/clsSecurityController.php";
  * TO DO LIST:
  * Registro en SERVER API: Salen como que faltan parámetros, cuando se ponen en la URL
  * 
+ * La password es mas insegura que dejar tu billetera fuera del Salines. Solucionar procedures de validación de pwd
+ * 
  *  
  */
 

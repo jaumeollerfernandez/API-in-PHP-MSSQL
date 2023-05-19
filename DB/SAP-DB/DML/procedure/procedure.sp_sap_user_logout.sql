@@ -3,6 +3,7 @@ create procedure sp_sap_user_logout
 AS
 BEGIN
 DECLARE @ret integer = 1
+    SET NOCOUNT ON;
    DELETE FROM _sap_conn where conn_guid = @conn_guid 
 
    if(@@rowcount = 1) SET @ret = 0;
