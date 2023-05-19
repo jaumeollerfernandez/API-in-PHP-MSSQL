@@ -14,7 +14,7 @@ BEGIN
         END    
     ELSE
         BEGIN
-            EXEC dbo.sp_sap_utils_XMlresponse @ret, @message = 'Login no autorizado, ya se encuentra logueado. Contacte con su administrador';
+            EXEC dbo.sp_sap_utils_XMlresponse_successful @user_id=@user_id;
         END
 
 END
