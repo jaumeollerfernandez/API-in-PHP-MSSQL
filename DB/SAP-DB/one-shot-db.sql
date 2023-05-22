@@ -173,7 +173,7 @@ BEGIN
            @time AS [cTime],
            @time AS [last_batch],
            @conn_guid AS [conn_guid]
-	FOR XML PATH('sp_sap_conn_create'), ROOT('XMLresponse');
+	FOR XML PATH(''), ROOT('XMLresponse');
 END
 
 GO
