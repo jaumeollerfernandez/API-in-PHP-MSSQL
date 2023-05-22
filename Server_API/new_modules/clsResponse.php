@@ -6,6 +6,8 @@ class clsResponse{
     private clsRequest $request;
     public array $URLvalues;
     private array $arrErrors = [];
+    private $ResponseDataToAppend;
+
 
     function __construct(){
         $this->request = new clsRequest();
@@ -53,6 +55,7 @@ class clsResponse{
         $this->setURL();
         $this->setParametersToXML();
         $this->setErrorsToXML();
+        $this->setResponseDataToXML();
     }
 
     function setWebMethod():void{
@@ -78,6 +81,15 @@ class clsResponse{
         }
     }
 
+    function setResponseDataToXML(){
+        foreach ($this->ResponseDataToAppend->children() as $child) {
+            $childXml = $this->responseXML->body->addChild($child->getName(), $child);
+            foreach ($child->attributes() as $attrName => $attrValue) {
+                $childXml->addAttribute($attrName, $attrValue);
+            }
+        }
+    }
+
     function setErrorsToXML():void{
         if(count($this->arrErrors) > 0){
             foreach($this->arrErrors as $error){
@@ -87,6 +99,10 @@ class clsResponse{
                 $currentError->addChild('user_message', $error->getUserMessage());
             }
         }
+    }
+
+    public function setResponseDataInClass($XMLresponseFromDB){
+        $this->ResponseDataToAppend = new SimpleXMLElement($XMLresponseFromDB);
     }
 
     function setServerID():void{

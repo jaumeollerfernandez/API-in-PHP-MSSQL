@@ -25,6 +25,7 @@ if( $action_value != 'undefined'){
     $response->appendError($tempErrorMethod);
     // if($API->ValidateThereIsNoErrors()){
         $SecurityController->ExecuteAction($action_value, $response->getURLvalues());
+        $response->setResponseDataInClass($SecurityController->ObtainXMLResponse());
     // }
 
 }else{
@@ -33,6 +34,6 @@ if( $action_value != 'undefined'){
     $response->setError($error);
 }     
 
-// $response->Render('XML');
+$response->Render('XML');
 
 ?>

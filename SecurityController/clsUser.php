@@ -18,7 +18,7 @@ class clsUser{
     private int $CookieTime = 3600;
     private $XMLresponseFromDB;
     private clsDbController $DBController;
-    private stdClass $XMLtoIntroduceInResponseData;
+    private string $XMLtoIntroduceInResponseData;
 
     public function __construct($IP, $port, $DataBase, $DataBaseUser, $DataBasePassword){
         $this->DBController = new clsDbController();
@@ -42,18 +42,18 @@ class clsUser{
         $this->_ExecuteUserAction($action);
     }
 
-    public function SendResponse(){
-        return $this->XMLresponseFromDB;
-    }
-
     public function GenerateConnectionToDB(){
         $this->DBController->AddConnectionToDB($this->IP, $this->port, $this->DataBase, $this->DataBaseUser, $this->DataBasePassword);
     }
 
     public function GetXMLresponseFromDB(){
-        return $this->XMLresponseFromDB;
+        return $this->XMLtoIntroduceInResponseData;
     }
 
+    
+    /**
+     * Private functions
+     */
     protected function _DetectCookieOnClient(){
         if(isset($_COOKIE[$this->CookieName])){
             $this->cid = $_COOKIE[$this->CookieName];
@@ -62,22 +62,16 @@ class clsUser{
             $this->HasCookie = false;
         }
     }
-
-    /**
-     * Private functions
-     */
-
+    
     protected function _ExecuteUserAction($action){
 
         $this->_ExecuteActionIntoDB($action);
 
         $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
         $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
-        $this->XMLtoIntroduceInResponseData = $this->XMLresponseFromDB[0];
+        $this->XMLtoIntroduceInResponseData = $ManagedStdClass;
 
         $this->_ExecuteActionIntoUserClient($action, $ManagedStdClass);
-        
-        $this->_RenderXML($this->XMLresponseFromDB);
     }
 
     protected function _SetCookieToClient($stdClass){
