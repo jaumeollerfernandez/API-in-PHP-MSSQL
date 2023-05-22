@@ -34,6 +34,6 @@ if( $action_value != 'undefined'){
     $response->setError($error);
 }     
 
-// $response->Render('XML');
+$response->Render('XML');
 
 ?>

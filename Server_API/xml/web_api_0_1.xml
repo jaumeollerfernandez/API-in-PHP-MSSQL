@@ -46,15 +46,10 @@
            <endpoint>_ws_auth.php</endpoint>
            <description>Register into the system</description>
            <params_collection>
-               <param name="register">
+               <param name="action">
                    <type>string</type>
                    <mandatory>yes</mandatory>
                    <default>register</default>
-               </param>
-               <param name="user_id">
-                   <type>string</type>
-                   <mandatory>yes</mandatory>
-                   <min_length>5</min_length>
                </param>
                <param name="user">
                    <type>string</type>
@@ -62,6 +57,11 @@
                    <min_length>5</min_length>
                </param>
                <param name="pwd">
+                   <type>string</type>
+                   <mandatory>yes</mandatory>
+                   <min_length>5</min_length>
+               </param>
+               <param name="user_id">
                    <type>string</type>
                    <mandatory>yes</mandatory>
                    <min_length>5</min_length>

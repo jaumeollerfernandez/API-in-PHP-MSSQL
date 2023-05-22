@@ -11,7 +11,6 @@ class clsMethod{
         $this->xml = $XMLobject;
         $this->ParseParamCollection();
     }
-
     function getActionValue():string{
         $ActionValue = $this->xml->params_collection->param->default->__ToString();
         return $ActionValue;

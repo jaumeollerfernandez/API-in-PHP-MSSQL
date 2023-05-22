@@ -61,13 +61,23 @@ class clsParam
         $getName = $this->obj_params['name']->__toString();
         $getValue = $this->request->getValueURL($getName);
         $this->URLParamName = $getName;
-       
        if($getValue != "undefined"){
         switch ($getName){
             case 'action':
                 clsServerAPI::EchoShowing('Action Validado', "Encontrado el {$getName}");
                 break;
             case 'user': 
+                if($this->pMandatory == 'yes'){
+                    foreach ($this->obj_params as $sParam){
+                        $this->Check_isString($getValue);
+                        $this->Check_minlength($getValue, $this->pMinLength);
+                        break;
+                    }
+                }else{
+                    return 0;
+                }
+                break;
+            case 'user_id': 
                 if($this->pMandatory == 'yes'){
                     foreach ($this->obj_params as $sParam){
                         $this->Check_isString($getValue);

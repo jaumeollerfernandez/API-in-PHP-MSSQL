@@ -26,7 +26,7 @@ class clsServerAPI
         $newMethod = new clsMethod($pMethod);
         array_push($this->arrMethods, $newMethod);
     }
-
+    
     function Validate(string $pActionValue): void
     {
         $MethodExists = false;
@@ -34,7 +34,6 @@ class clsServerAPI
             if ($pActionValue == $M->getActionValue()) {
                 $MethodExists = true;
                 $M->Validate();
-                echo('hola');
                 clsServerAPI::EchoShowing('Método Validado', 'todo bien');
                 if(count($M->getErrors())>0){
                     $this->arrErrors = $M->getErrors();
