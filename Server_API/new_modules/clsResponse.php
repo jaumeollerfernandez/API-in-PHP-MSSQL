@@ -82,10 +82,12 @@ class clsResponse{
     }
 
     function setResponseDataToXML(){
-        foreach ($this->ResponseDataToAppend->children() as $child) {
-            $childXml = $this->responseXML->body->addChild($child->getName(), $child);
-            foreach ($child->attributes() as $attrName => $attrValue) {
-                $childXml->addAttribute($attrName, $attrValue);
+        if($this->ResponseDataToAppend != null){
+            foreach ($this->ResponseDataToAppend->children() as $child) {
+                $childXml = $this->responseXML->body->addChild($child->getName(), $child);
+                foreach ($child->attributes() as $attrName => $attrValue) {
+                    $childXml->addAttribute($attrName, $attrValue);
+                }
             }
         }
     }

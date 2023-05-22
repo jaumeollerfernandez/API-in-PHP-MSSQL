@@ -11,7 +11,7 @@ BEGIN
     SELECT @ret AS [ret],
            @user_id AS [user_id],
            @conn_guid AS [conn_guid]
-	FOR XML PATH('sp_sap_conn_create'), ROOT('XMLresponse');
+	FOR XML PATH(''), ROOT('XMLresponse');
     /********************************* TEST UNITARIO*********************************
       exec sp_sap_user_login "marc@gmail.com","mac"
     *********************************************************************************/
