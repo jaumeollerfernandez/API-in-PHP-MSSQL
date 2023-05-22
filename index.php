@@ -26,7 +26,9 @@ if( $action_value != 'undefined'){
     $API->Validate($action_value);
     $tempErrorMethod = $API->getErrors();
     $response->appendError($tempErrorMethod);
-    $SecurityController->ExecuteAction($action_value, $response->getURLvalues());
+    if(count($tempErrorMethod) == 0){
+        $SecurityController->ExecuteAction($action_value, $response->getURLvalues());
+    }
 
 }else{
 
