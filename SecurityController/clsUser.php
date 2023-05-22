@@ -119,7 +119,9 @@ class clsUser{
                 $this->_SetCookieToClient($stdClass);
                 break;
             case 'logout':
-                $this->_UnSetCookieToClient();
+                if($this->HasCookie){
+                    $this->_UnSetCookieToClient();
+                }
                 break;
             case 'register':
                 break;
@@ -177,7 +179,7 @@ class clsUser{
                 return $PreparedArray;
                 break;
             case 'logout':
-                array_push($PreparedArray, $this->cid);
+                array_push($PreparedArray, $this->params['cid']);
                 return $PreparedArray;
                 break;
         }

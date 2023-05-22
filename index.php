@@ -8,8 +8,7 @@ include_once __DIR__."/SecurityController/clsUser.php";
 include_once __DIR__."/SecurityController/clsSecurityController.php";
 
 /**
- *  
- *  
+ *  LOGOUT: Preparar un config en el xml de server api que gestione la entrada de un CID.
  */
 
 $Request = new clsRequest();
