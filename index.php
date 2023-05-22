@@ -8,8 +8,6 @@ include_once __DIR__."/SecurityController/clsUser.php";
 include_once __DIR__."/SecurityController/clsSecurityController.php";
 
 /**
- * TO DO LIST:
- * Registro en SERVER API: Salen como que faltan parámetros, cuando se ponen en la URL
  *  
  *  
  */
@@ -26,9 +24,9 @@ if( $action_value != 'undefined'){
     $API->Validate($action_value);
     $tempErrorMethod = $API->getErrors();
     $response->appendError($tempErrorMethod);
-    if(count($tempErrorMethod) == 0){
+    // if($API->ValidateThereIsNoErrors()){
         $SecurityController->ExecuteAction($action_value, $response->getURLvalues());
-    }
+    // }
 
 }else{
 
@@ -36,6 +34,6 @@ if( $action_value != 'undefined'){
     $response->setError($error);
 }     
 
-$response->Render('XML');
+// $response->Render('XML');
 
 ?>

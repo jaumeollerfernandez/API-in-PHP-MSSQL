@@ -21,6 +21,14 @@ class clsServerAPI
         }
     }
 
+    public function ValidateThereIsNoErrors():bool{
+        if(count($this->arrErrors) == 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     function addMethod(SimpleXMLElement $pMethod): void{
         clsServerAPI::EchoShowing('Añadido el método', $pMethod . 'Se ha añadido a el Array de métodos');
         $newMethod = new clsMethod($pMethod);
