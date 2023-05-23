@@ -1,7 +1,5 @@
 <?php
 
-use function PHPSTORM_META\type;
-
 include_once __DIR__."/../DB_Controller/clsDbController.php";
 
 class clsUser{
@@ -54,6 +52,7 @@ class clsUser{
     /**
      * Private functions
      */
+
     protected function _DetectCookieOnClient(){
         if(isset($_COOKIE[$this->CookieName])){
             $this->cid = $_COOKIE[$this->CookieName];
@@ -76,7 +75,7 @@ class clsUser{
 
     protected function _SetCookieToClient($stdClass){
         $xml = simplexml_load_string($stdClass);
-        setcookie($this->CookieName,  $xml->sp_sap_conn_create->conn_guid, time() + $this->CookieTime);
+        setcookie($this->CookieName,  $xml->conn_guid, time() + $this->CookieTime);
     }
 
     protected function _UnSetCookieToClient(){
