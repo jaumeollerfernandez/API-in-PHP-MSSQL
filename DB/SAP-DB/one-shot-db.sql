@@ -212,20 +212,27 @@ END
 
 GO
 
-create procedure sp_sap_user_logout
-    @conn_guid UNIQUEIDENTIFIER
+CREATE OR ALTER PROCEDURE sp_sap_user_logout
+    @conn_guid NVARCHAR(255)
 AS
 BEGIN
-DECLARE @ret integer = 1
-    SET NOCOUNT ON;
-   DELETE FROM _sap_conn where conn_guid = @conn_guid 
+DECLARE @ret INTEGER = 1
+DECLARE @validatecid INTEGER;
 
-   if(@@rowcount = 1) SET @ret = 0;
+    EXEC @validatecid = dbo.sf_conn_validate_cid @cid = @conn_guid;
 
-   EXEC sp_sap_utils_XMlresponse @ret,@message = 'usuario desconectado';
+    IF(@validatecid = 0)
+        BEGIN
+            DELETE FROM _sap_conn where conn_guid = @conn_guid;
+            SET @ret = 0;
+            EXEC sp_sap_utils_XMlresponse @ret, @message = 'Usuario desconectado satisfactoriamente.';
+        END
+    ELSE
+        BEGIN
+             EXEC sp_sap_utils_XMlresponse @ret, @message = 'El CID correspondiente no se encuentra en la base de datos. No se ha realizado la acción.';
+        END   
 END
-
-GO
+go 
 
 
 
@@ -323,5 +330,19 @@ BEGIN
         END
 end
 
+GO
+
+CREATE OR ALTER FUNCTION sf_conn_validate_cid(@cid nvarchar(255))
+RETURNS INT
+AS
+BEGIN
+    DECLARE @isValid INT;
+    IF TRY_CAST(@cid AS UNIQUEIDENTIFIER) IS NOT NULL
+        SET @isValid = 0;
+    ELSE
+        SET @isValid = 1;
+
+    RETURN @isValid;
+END
 GO
 
