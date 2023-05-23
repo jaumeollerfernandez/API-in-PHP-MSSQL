@@ -1,10 +1,10 @@
-CREATE OR ALTER PROCEDURE sp_sap_user_logout
-    @conn_guid NVARCHAR(255)
+create OR ALTER procedure sp_sap_user_logout
+    @conn_guid nvarchar(255)
 AS
 BEGIN
 DECLARE @ret INTEGER = 1
 DECLARE @validatecid INTEGER;
-
+	SET NOCOUNT ON;
     EXEC @validatecid = dbo.sf_conn_validate_cid @cid = @conn_guid;
 
     IF(@validatecid = 0)
