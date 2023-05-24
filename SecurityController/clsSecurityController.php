@@ -29,9 +29,15 @@ class clsSecurityController{
                     $session->SetCookie();
                 }
                 break;
+
                 case 'logout':
                 $this->_TryLogout();
+                if($this->_ValidateReturn()){
+                    $session = new clsSession();
+                    $session->UnsetCookie();
+                }
                 break;
+                
             case 'register':
                 $this->_TryRegister();
                 break;
@@ -57,11 +63,13 @@ class clsSecurityController{
         $user = new clsUser();
         $user->ExecuteAction('logout', $this->params);
         $this->XMLresponseString = $user->GetXMLresponseFromDB();
+        $this->XMLresponseObject = simplexml_load_string($this->XMLresponseString);
     }
     protected function _TryRegister(){
         $user = new clsUser();
         $user->ExecuteAction('register', $this->params);
         $this->XMLresponseString = $user->GetXMLresponseFromDB();
+        $this->XMLresponseObject = simplexml_load_string($this->XMLresponseString);
     }
 
     protected function _ValidateReturn(){
