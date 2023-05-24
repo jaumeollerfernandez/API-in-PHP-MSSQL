@@ -15,7 +15,6 @@ class clsUser{
 
     public function __construct(){
         $this->DBController = new clsDbController();
-        $this->_DetectCookieOnClient();
     }
 
     /**
@@ -37,18 +36,12 @@ class clsUser{
      * Private functions
      */
 
+
      /**
       * MOVE TO CLS SESSION
       */
 
-    protected function _DetectCookieOnClient(){
-        if(isset($_COOKIE[$this->CookieName])){
-            $this->cid = $_COOKIE[$this->CookieName];
-            $this->HasCookie = true;
-        }else{
-            $this->HasCookie = false;
-        }
-    }
+   
     
     protected function _InteractionWithDBcontroller($action){
 
@@ -56,34 +49,8 @@ class clsUser{
 
         $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
 
-        $this->_ExecuteActionIntoUserClient($action, $this->XMLresponseFromDB);
+        // $this->_ExecuteActionIntoUserClient($action, $this->XMLresponseFromDB);
     }
-
-     /**
-      * MOVE TO CLS SESSION
-      */
-
-    protected function _SetCookieToClient($stdClass){
-        $xml = simplexml_load_string($stdClass);
-        setcookie($this->CookieName,  $xml->conn_guid, time() + $this->CookieTime);
-    }
-
-    /**
-    * MOVE TO CLS SESSION
-    */
-
-    protected function _UnSetCookieToClient(){
-            setcookie($this->CookieName, "", time()-3600);    
-    }
-
-    protected function _ManageResponseFromDB($stdClass){
-        $stdClassObject = $stdClass;
-        $properties = get_object_vars($stdClassObject);
-        $firstProperty = reset($properties);
-        return $firstProperty;
-
-    }
-
 
     protected function _ExecuteActionIntoDB($action){
         $PreparedParams = $this->_PrepareParams($action);
@@ -96,21 +63,6 @@ class clsUser{
                 break;
             case 'register':
                 $this->DBController->ExecuteProcedure("sp_sap_user_register", $PreparedParams);
-                break;
-        }
-    }
-
-    protected function _ExecuteActionIntoUserClient($action, $stdClass){
-        switch($action){
-            case 'login':
-                $this->_SetCookieToClient($stdClass);
-                break;
-            case 'logout':
-                if($this->HasCookie){
-                    $this->_UnSetCookieToClient();
-                }
-                break;
-            case 'register':
                 break;
         }
     }

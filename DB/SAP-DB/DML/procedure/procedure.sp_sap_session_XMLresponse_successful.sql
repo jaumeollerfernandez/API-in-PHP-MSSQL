@@ -3,7 +3,7 @@ CREATE PROCEDURE sp_sap_session_XMLresponse_successful
 AS
 BEGIN
       SET NOCOUNT ON;
-    DECLARE @ret int = 1;
+    DECLARE @ret int = 0;
     DECLARE @time datetime;
 	DECLARE @conn_guid uniqueidentifier;
 	SET @conn_guid = (SELECT conn_guid FROM _sap_conn WHERE user_id=@user_id);

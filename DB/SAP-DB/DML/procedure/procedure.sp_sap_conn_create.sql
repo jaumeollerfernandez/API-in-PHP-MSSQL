@@ -4,7 +4,7 @@ AS
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @ret int = 1;
+    DECLARE @ret int = 0;
     DECLARE @time datetime;
 	DECLARE @conn_guid uniqueidentifier;
 

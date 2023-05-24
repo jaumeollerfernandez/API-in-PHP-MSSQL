@@ -1,8 +1,8 @@
-CREATE PROCEDURE sp_sap_session_XMLresponse
+CREATE OR ALTER PROCEDURE sp_sap_session_XMLresponse
     @user_id nvarchar(255)
 AS
 BEGIN
-   SELECT [user].user_name, conn.conn_guid, CONVERT(int, 0) AS [error]
+   SELECT [user].user_name, conn.conn_guid, CONVERT(int, 0) AS [ret]
    FROM _sap_users [user] 
    JOIN _sap_conn conn 
    ON [user].user_id = conn.user_id

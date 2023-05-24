@@ -1,11 +1,16 @@
 <?php
 
+include_once __DIR__."/clsSession.php";
+
 class clsSecurityController{
     private string $action;
     private array $params;
-    private $XMLresponse;
+    private $XMLresponseString;
+    private $XMLresponseObject;
 
-    function __construct(){}
+    public function __construct(){
+        
+    }
 
     /**
      * Public Functions
@@ -18,6 +23,11 @@ class clsSecurityController{
         switch(strtolower($this->action)){
             case 'login':
                 $this->_TryLogin();
+                if($this->_ValidateReturn()){
+                    $session = new clsSession();
+                    $session->SetCID($this->XMLresponseObject->conn_guid);
+                    $session->SetCookie();
+                }
                 break;
                 case 'logout':
                 $this->_TryLogout();
@@ -26,10 +36,10 @@ class clsSecurityController{
                 $this->_TryRegister();
                 break;
             }
-            
         }
+
     public function ObtainXMLResponse(){
-        return $this->XMLresponse;
+        return $this->XMLresponseString;
     }
 
     /**
@@ -39,19 +49,31 @@ class clsSecurityController{
     protected function _TryLogin(){
         $user = new clsUser();
         $user->ExecuteAction('login', $this->params);
-        $this->XMLresponse = $user->GetXMLresponseFromDB();
+        $this->XMLresponseString = $user->GetXMLresponseFromDB();
+        $this->XMLresponseObject = simplexml_load_string($this->XMLresponseString);
+
     }
     protected function _TryLogout(){
         $user = new clsUser();
         $user->ExecuteAction('logout', $this->params);
-        $this->XMLresponse = $user->GetXMLresponseFromDB();
+        $this->XMLresponseString = $user->GetXMLresponseFromDB();
     }
     protected function _TryRegister(){
         $user = new clsUser();
         $user->ExecuteAction('register', $this->params);
-        $this->XMLresponse = $user->GetXMLresponseFromDB();
+        $this->XMLresponseString = $user->GetXMLresponseFromDB();
     }
 
+    protected function _ValidateReturn(){
+        /**
+         * Return que será de segunda respuesta. Ahora de momento es en XML. Deberá refactorizarse en que pille la segunda respuesta de retorno.
+         */
+        if($this->XMLresponseObject->ret == 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
     
 }
 
