@@ -43,12 +43,20 @@ class clsDbController{
                 break;
             case 'OBJECT':
                 // $this->_RenderOBJECT($this->XMLresponse);
-                return $this->XMLresponse;
+                $result = $this->_ManageResponseFromDB($this->XMLresponse[0]);
+                return $result;
                 break;
             default:
                 echo('Must use XML, None, in _ObtainResult, no cases found. ');
 
         }
+    }
+
+    protected function _ManageResponseFromDB($stdClass){
+        $stdClassObject = $stdClass;
+        $properties = get_object_vars($stdClassObject);
+        $firstProperty = reset($properties);
+        return $firstProperty;
     }
 
     function _SetXMLheader(): void{

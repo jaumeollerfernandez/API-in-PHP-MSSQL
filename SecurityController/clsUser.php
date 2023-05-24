@@ -12,7 +12,6 @@ class clsUser{
     private int $CookieTime = 3600;
     private $XMLresponseFromDB;
     private clsDbController $DBController;
-    private string $XMLtoIntroduceInResponseData;
 
     public function __construct(){
         $this->DBController = new clsDbController();
@@ -26,17 +25,21 @@ class clsUser{
     public function ExecuteAction($action, $params){
         $this->action = strtolower($action);
         $this->params = $params;
-        $this->_ExecuteUserAction($action);
+        $this->_InteractionWithDBcontroller($action);
     }
 
     public function GetXMLresponseFromDB(){
-        return $this->XMLtoIntroduceInResponseData;
+        return $this->XMLresponseFromDB;
     }
 
     
     /**
      * Private functions
      */
+
+     /**
+      * MOVE TO CLS SESSION
+      */
 
     protected function _DetectCookieOnClient(){
         if(isset($_COOKIE[$this->CookieName])){
@@ -47,21 +50,27 @@ class clsUser{
         }
     }
     
-    protected function _ExecuteUserAction($action){
+    protected function _InteractionWithDBcontroller($action){
 
         $this->_ExecuteActionIntoDB($action);
 
         $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-        $ManagedStdClass = $this->_ManageResponseFromDB($this->XMLresponseFromDB[0]);
-        $this->XMLtoIntroduceInResponseData = $ManagedStdClass;
 
-        $this->_ExecuteActionIntoUserClient($action, $ManagedStdClass);
+        $this->_ExecuteActionIntoUserClient($action, $this->XMLresponseFromDB);
     }
+
+     /**
+      * MOVE TO CLS SESSION
+      */
 
     protected function _SetCookieToClient($stdClass){
         $xml = simplexml_load_string($stdClass);
         setcookie($this->CookieName,  $xml->conn_guid, time() + $this->CookieTime);
     }
+
+    /**
+    * MOVE TO CLS SESSION
+    */
 
     protected function _UnSetCookieToClient(){
             setcookie($this->CookieName, "", time()-3600);    
