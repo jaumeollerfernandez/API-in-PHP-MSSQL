@@ -4,11 +4,18 @@ include_once __DIR__."/../DB_utils/clsConnectToDB.php";
 include_once __DIR__."/../DB_utils/clsExecuteProceduresToDB.php";
 
 class clsDbController{
+    private string $IP = "172.17.0.1";
+    private string $port = "14333";
+    private string $DataBase = "WS_API_07";
+    private string $DataBaseUser = "SA";
+    private string $DataBasePassword = "@Asix13021997";
     private clsConnectToDB $DBconnection;
     private clsExecuteProceduresToDB $ProcedureExecute;
     private Array $XMLresponse;
 
-    function __construct(){}
+    function __construct(){
+        $this->AddConnectionToDB($this->IP, $this->port, $this->DataBase, $this->DataBaseUser, $this->DataBasePassword);
+    }
 
     function AddConnectionToDB(string $sql, string $port, string $DBname, string $user, string $pwd){
         $this->DBconnection = new clsConnectToDB($sql, $port, $DBname, $user, $pwd);

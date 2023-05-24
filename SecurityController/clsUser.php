@@ -3,11 +3,7 @@
 include_once __DIR__."/../DB_Controller/clsDbController.php";
 
 class clsUser{
-    private string $IP;
-    private string $port;
-    private string $DataBase;
-    private string $DataBaseUser;
-    private string $DataBasePassword;
+    
     private string $action;
     private array $params;
     private string $cid;
@@ -18,14 +14,8 @@ class clsUser{
     private clsDbController $DBController;
     private string $XMLtoIntroduceInResponseData;
 
-    public function __construct($IP, $port, $DataBase, $DataBaseUser, $DataBasePassword){
+    public function __construct(){
         $this->DBController = new clsDbController();
-        $this->IP = $IP;
-        $this->port = $port;
-        $this->DataBase = $DataBase;
-        $this->DataBaseUser = $DataBaseUser;
-        $this->DataBasePassword = $DataBasePassword;
-        $this->GenerateConnectionToDB();
         $this->_DetectCookieOnClient();
     }
 
@@ -36,12 +26,7 @@ class clsUser{
     public function ExecuteAction($action, $params){
         $this->action = strtolower($action);
         $this->params = $params;
-        print_r($this->params);
         $this->_ExecuteUserAction($action);
-    }
-
-    public function GenerateConnectionToDB(){
-        $this->DBController->AddConnectionToDB($this->IP, $this->port, $this->DataBase, $this->DataBaseUser, $this->DataBasePassword);
     }
 
     public function GetXMLresponseFromDB(){

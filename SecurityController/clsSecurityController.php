@@ -37,20 +37,17 @@ class clsSecurityController{
      */
 
     protected function _TryLogin(){
-        $user = new clsUser("172.17.0.1","14333","WS_API_07","SA","@Asix13021997");
-        $user->GenerateConnectionToDB();
+        $user = new clsUser();
         $user->ExecuteAction('login', $this->params);
         $this->XMLresponse = $user->GetXMLresponseFromDB();
     }
     protected function _TryLogout(){
-        $user = new clsUser("172.17.0.1","14333","WS_API_07","SA","@Asix13021997");
-        $user->GenerateConnectionToDB();
+        $user = new clsUser();
         $user->ExecuteAction('logout', $this->params);
         $this->XMLresponse = $user->GetXMLresponseFromDB();
     }
     protected function _TryRegister(){
-        $user = new clsUser("172.17.0.1","14333","WS_API_07","SA","@Asix13021997");
-        $user->GenerateConnectionToDB();
+        $user = new clsUser();
         $user->ExecuteAction('register', $this->params);
         $this->XMLresponse = $user->GetXMLresponseFromDB();
     }
