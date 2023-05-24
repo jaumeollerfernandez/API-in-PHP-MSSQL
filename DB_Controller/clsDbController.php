@@ -23,6 +23,30 @@ class clsDbController{
         $this->ProcedureExecute = new clsExecuteProceduresToDB($this->DBconnection->getPDODB());
     }
 
+    public function _ExecuteActionIntoDB($Mode, $params){
+        $PreparedArray = [];
+        switch($Mode){
+            case 'login':
+                array_push($PreparedArray, $params['user']);
+                array_push($PreparedArray, $params['pwd']);
+                $this->ExecuteProcedure("sp_sap_user_login", $PreparedArray);
+                return $PreparedArray;
+                break;
+            case 'register':
+                array_push($PreparedArray, $params['user_id']);
+                array_push($PreparedArray, $params['pwd']);
+                array_push($PreparedArray, $params['user']);
+                $this->ExecuteProcedure("sp_sap_user_register", $PreparedArray);
+                return $PreparedArray;
+                break;
+            case 'logout':
+                array_push($PreparedArray, $params['cid']);
+                $this->ExecuteProcedure("sp_sap_user_logout", $PreparedArray);
+                return $PreparedArray;
+                break;
+        }
+    }
+
     function ExecuteProcedure($procedure, $params){
         $this->ProcedureExecute->CallProcedure($procedure, $params);
         $this->SetResponseFromProcedureToXMLresponse();

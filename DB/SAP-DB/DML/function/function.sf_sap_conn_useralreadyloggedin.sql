@@ -14,10 +14,5 @@ IF ( (SELECT count(*) from _sap_conn where user_id = @user_id) = 1)
 
 RETURN @response
 
-/********************************* TEST UNITARIO*********************************
-DECLARE @ret INT;
-EXEC @ret = sf_if_exist_user @user_id = 'ely@gmail.com' ;
-select @ret;
-*********************************************************************************/
 END
 go

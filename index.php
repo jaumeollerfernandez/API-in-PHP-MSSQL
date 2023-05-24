@@ -21,6 +21,7 @@ if( $action_value != 'undefined'){
     $API->Validate($action_value);
     $tempErrorMethod = $API->getErrors();
     $response->appendError($tempErrorMethod);
+    
     if($API->ValidateThereIsNoErrors()){
         $SecurityController->ExecuteAction($action_value, $response->getURLvalues());
         $response->setResponseDataInClass($SecurityController->ObtainXMLResponse());

@@ -6,10 +6,6 @@ class clsUser{
     
     private string $action;
     private array $params;
-    private string $cid;
-    private bool $HasCookie;
-    private string $CookieName = 'CID';
-    private int $CookieTime = 3600;
     private $XMLresponseFromDB;
     private clsDbController $DBController;
 
@@ -24,7 +20,8 @@ class clsUser{
     public function ExecuteAction($action, $params){
         $this->action = strtolower($action);
         $this->params = $params;
-        $this->_InteractionWithDBcontroller($action);
+        $this->DBController->_ExecuteActionIntoDB($this->action, $this->params);
+        $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
     }
 
     public function GetXMLresponseFromDB(){
@@ -36,57 +33,6 @@ class clsUser{
      * Private functions
      */
 
-
-     /**
-      * MOVE TO CLS SESSION
-      */
-
-   
-    
-    protected function _InteractionWithDBcontroller($action){
-
-        $this->_ExecuteActionIntoDB($action);
-
-        $this->XMLresponseFromDB = $this->DBController->ObtainResult('OBJECT');
-
-        // $this->_ExecuteActionIntoUserClient($action, $this->XMLresponseFromDB);
-    }
-
-    protected function _ExecuteActionIntoDB($action){
-        $PreparedParams = $this->_PrepareParams($action);
-        switch(strtolower($action)){
-            case 'login':
-                $this->DBController->ExecuteProcedure("sp_sap_user_login", $PreparedParams);
-                break;
-            case 'logout':
-                $this->DBController->ExecuteProcedure("sp_sap_user_logout", $PreparedParams);
-                break;
-            case 'register':
-                $this->DBController->ExecuteProcedure("sp_sap_user_register", $PreparedParams);
-                break;
-        }
-    }
-
-    protected function _PrepareParams($Mode){
-        $PreparedArray = [];
-        switch($Mode){
-            case 'login':
-                array_push($PreparedArray, $this->params['user']);
-                array_push($PreparedArray, $this->params['pwd']);
-                return $PreparedArray;
-                break;
-            case 'register':
-                array_push($PreparedArray, $this->params['user_id']);
-                array_push($PreparedArray, $this->params['pwd']);
-                array_push($PreparedArray, $this->params['user']);
-                return $PreparedArray;
-                break;
-            case 'logout':
-                array_push($PreparedArray, $this->params['cid']);
-                return $PreparedArray;
-                break;
-        }
-    }
 
     
     protected function _SetXMLheader(): void{
