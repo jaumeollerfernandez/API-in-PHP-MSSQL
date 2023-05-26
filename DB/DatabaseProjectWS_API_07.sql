@@ -1,20 +1,3 @@
-CREATE TABLE [dbo].[_sap_conn] (
-    [conn_guid]  UNIQUEIDENTIFIER DEFAULT (newid()) NOT NULL,
-    [user_id]    NVARCHAR (255)   NOT NULL,
-    [cTime]      DATETIME         NULL,
-    [last_batch] DATETIME         NULL,
-    [_mndt]      INT              DEFAULT ((0)) NULL,
-    [_created]   DATETIME         DEFAULT (getdate()) NULL,
-    [_updated]   DATETIME         NULL,
-    [_deleted]   DATETIME         NULL,
-    [_row_guid]  UNIQUEIDENTIFIER DEFAULT (newid()) NULL,
-    PRIMARY KEY CLUSTERED ([user_id] ASC),
-    CONSTRAINT [_sap_conn__sap_users_user_id_fk] FOREIGN KEY ([user_id]) REFERENCES [dbo].[_sap_users] ([user_id])
-);
-
-
-GO
-
 CREATE TABLE [dbo].[_sap_users] (
     [user_id]   NVARCHAR (255)   NOT NULL,
     [nickname]  NVARCHAR (255)   NULL,
@@ -32,6 +15,25 @@ CREATE TABLE [dbo].[_sap_users] (
 
 
 GO
+
+CREATE TABLE [dbo].[_sap_conn] (
+    [conn_guid]  UNIQUEIDENTIFIER DEFAULT (newid()) NOT NULL,
+    [user_id]    NVARCHAR (255)   NOT NULL,
+    [cTime]      DATETIME         NULL,
+    [last_batch] DATETIME         NULL,
+    [_mndt]      INT              DEFAULT ((0)) NULL,
+    [_created]   DATETIME         DEFAULT (getdate()) NULL,
+    [_updated]   DATETIME         NULL,
+    [_deleted]   DATETIME         NULL,
+    [_row_guid]  UNIQUEIDENTIFIER DEFAULT (newid()) NULL,
+    PRIMARY KEY CLUSTERED ([user_id] ASC),
+    CONSTRAINT [_sap_conn__sap_users_user_id_fk] FOREIGN KEY ([user_id]) REFERENCES [dbo].[_sap_users] ([user_id])
+);
+
+
+GO
+
+
 
 
 CREATE   function  sf_sap_user_validate_pwd(@user_id nvarchar(255),@pwd nvarchar(255))
